@@ -1,5 +1,6 @@
 "use client"
 
+import { useAuth } from "@/context/AuthContext"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
@@ -9,7 +10,7 @@ interface Errors {
   password?: string
 }
 
-type FormData = {
+interface FormData {
   email: string
   password: string
 }
@@ -44,6 +45,7 @@ const page = () => {
   const [errors, setErrors] = useState<Errors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
+  const { login } = useAuth()
   const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -51,7 +53,7 @@ const page = () => {
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setServerError("")
 
@@ -66,21 +68,14 @@ const page = () => {
     setIsLoading(true)
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/auth/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-        //credentials: "include",
-      })
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}))
-        throw new Error(errorData.message || "Login failed")
-      }
-
+      await login(form)
       router.push("/")
-    } catch (err: any) {
-      setServerError(err.message)
+    } catch (error) {
+      if (error instanceof Error) {
+        setServerError(error.message)
+      } else {
+        setServerError("An unexpected error occurred")
+      }
     } finally {
       setIsLoading(false)
     }

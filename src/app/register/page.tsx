@@ -1,17 +1,18 @@
 "use client"
 
+import { useAuth } from "@/context/AuthContext"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 
-type Errors = {
+interface Errors {
   username?: string
   email?: string
   password?: string
   confirmPassword?: string
 }
 
-type FormData = {
-  username?: string
+interface FormData {
+  username: string
   email: string
   password: string
   confirmPassword: string
@@ -58,6 +59,7 @@ const page = () => {
   const [errors, setErrors] = useState<Errors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
+  const { register } = useAuth()
   const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -80,25 +82,19 @@ const page = () => {
     setIsLoading(true)
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/register/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: form.email,
-          password: form.password,
-        }),
+      await register({
+        username: form.username,
+        email: form.email,
+        password: form.password,
       })
 
-      const data = await res.json()
-
-      if (!res.ok) {
-        setServerError(data.message || "Registration failed")
-        return
-      }
-
       router.push("/login")
-    } catch (err) {
-      setServerError("Server error. Please try again.")
+    } catch (error) {
+      if (error instanceof Error) {
+        setServerError(error.message)
+      } else {
+        setServerError("An unexpected error occurred")
+      }
     } finally {
       setIsLoading(false)
     }

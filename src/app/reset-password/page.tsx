@@ -4,12 +4,12 @@ import { useSearchParams } from "next/navigation"
 import { useRouter } from "next/router"
 import React, { useState } from "react"
 
-type Errors = {
+interface Errors {
   password?: string
   confirmPassword?: string
 }
 
-type FormData = {
+interface FormData {
   password: string
   confirmPassword: string
 }
