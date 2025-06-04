@@ -72,7 +72,7 @@ const page = () => {
 
     try {
       await login(form)
-      const res = await fetch("https://caphehong.shop:8000/api/auth/", {
+      const res = await fetch("https://caphehong.shop/api/auth/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
