@@ -1,40 +1,42 @@
 "use client"
 
-import { useSearchParams } from "next/navigation"
-import { useRouter } from "next/router"
+import { parseAxiosError } from "@/utils/apiErrors"
+import axios from "axios"
+import { useParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 
 interface Errors {
   password?: string
-  confirmPassword?: string
+  re_password?: string
 }
 
 interface FormData {
   password: string
-  confirmPassword: string
+  re_password: string
 }
 
 const initialFormData: FormData = {
   password: "",
-  confirmPassword: "",
+  re_password: "",
 }
 
 const validate = (form: FormData): Errors => {
-  const newErrors: Errors = {}
+  const errors: Errors = {}
 
   if (!form.password) {
-    newErrors.password = "Password is required"
-  } else if (form.password.length < 6) {
-    newErrors.password = "Password must be at least 6 characters"
+    errors.password = "Password is required"
+  } else if (form.password.length < 8) {
+    errors.password = "Password must be at least 8 characters"
   }
 
-  if (!form.confirmPassword) {
-    newErrors.confirmPassword = "Please confirm your password"
-  } else if (form.password !== form.confirmPassword) {
-    newErrors.confirmPassword = "Passwords do not match"
+  if (!form.re_password) {
+    errors.re_password = "Please confirm your password"
+  } else if (form.password !== form.re_password) {
+    errors.re_password = "Passwords do not match"
   }
 
-  return newErrors
+  return errors
 }
 
 const page = () => {
@@ -42,15 +44,16 @@ const page = () => {
   const [errors, setErrors] = useState<Errors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
-  const router = useRouter()
-  const searchParams = useSearchParams()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const router = useRouter()
+  const { uid, token } = useParams();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setServerError("")
 
@@ -61,34 +64,30 @@ const page = () => {
       return
     }
 
-    setErrors({})
-    setIsLoading(true)
-
-    const token = searchParams.get("token")
-
-    if (!token) {
-      setServerError("Invalid or missing token.")
-      setIsLoading(false)
+    if (!uid || !token) {
+      setServerError("Invalid reset link.")
       return
     }
 
+    setErrors({})
+    setIsLoading(true)
+
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/reset-password/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: form.password, token }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        setServerError(data.message || "Reset password failed")
-        return
-      }
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL
+      const response = await axios.post(
+        `${apiUrl}/api/auth/users/reset_password_confirm/`,
+        {
+          uid: uid,
+          token: token,
+          new_password: form.password,
+        }
+      )
+      console.log("Reset password response:", response.data)
 
       router.push("/")
-    } catch (err) {
-      setServerError("Server error. Please try again.")
+    } catch (error: unknown) {
+      const { message } = parseAxiosError(error)
+      setServerError(message)
     } finally {
       setIsLoading(false)
     }
@@ -125,13 +124,13 @@ const page = () => {
               className="input"
               placeholder="Confirm Password"
               type="password"
-              name="confirmPassword"
-              value={form.confirmPassword}
+              name="re_password"
+              value={form.re_password}
               onChange={handleChange}
               required
             />
             <p className="text-red-500 text-xs">
-              {errors.confirmPassword || "\u00A0"}
+              {errors.re_password || "\u00A0"}
             </p>
           </div>
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { useAuth } from "@/context/AuthContext"
+import { parseAxiosError } from "@/utils/apiErrors"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
@@ -21,23 +22,24 @@ const initialFormData: FormData = {
 }
 
 const validate = (form: FormData): Errors => {
-  const newErrors: Errors = {}
+  const errors: Errors = {}
 
-  const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email)
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
   if (!form.email) {
-    newErrors.email = "Email is required"
+    errors.email = "Email is required"
   } else if (!isValidEmail(form.email)) {
-    newErrors.email = "Invalid email format"
+    errors.email = "Invalid email format"
   }
 
   if (!form.password) {
-    newErrors.password = "Password is required"
-  } else if (form.password.length < 6) {
-    newErrors.password = "Password must be at least 6 characters"
+    errors.password = "Password is required"
+  } else if (form.password.length < 8) {
+    errors.password = "Password must be at least 8 characters"
   }
 
-  return newErrors
+  return errors
 }
 
 const page = () => {
@@ -45,15 +47,16 @@ const page = () => {
   const [errors, setErrors] = useState<Errors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
-  const { login } = useAuth()
-  const router = useRouter()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const router = useRouter()
+  const { login } = useAuth()
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setServerError("")
 
@@ -69,13 +72,11 @@ const page = () => {
 
     try {
       await login(form)
+
       router.push("/")
-    } catch (error) {
-      if (error instanceof Error) {
-        setServerError(error.message)
-      } else {
-        setServerError("An unexpected error occurred")
-      }
+    } catch (error: unknown) {
+      const { message } = parseAxiosError(error)
+      setServerError(message)
     } finally {
       setIsLoading(false)
     }

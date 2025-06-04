@@ -1,3 +1,5 @@
+"use client"
+
 import { parseAxiosError } from "@/utils/apiErrors"
 import axios from "axios"
 import { createContext, useContext, useEffect, useState } from "react"
@@ -6,7 +8,7 @@ interface User {
   id: number
   email: string
   role: string
-  username: string
+  name: string
 }
 
 interface LoginForm {
@@ -15,9 +17,10 @@ interface LoginForm {
 }
 
 interface RegisterForm {
-  username: string
+  name: string
   email: string
   password: string
+  re_password: string
 }
 
 interface AuthContextType {
@@ -25,9 +28,10 @@ interface AuthContextType {
   loading: boolean
   login: (formData: { email: string; password: string }) => Promise<void>
   register: (formData: {
-    username: string
+    name: string
     email: string
     password: string
+    re_password: string
   }) => Promise<User>
   logout: () => void
 }
@@ -59,20 +63,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     headers: { "Content-Type": "application/json" },
   })
 
-  const fetchUser = async (): Promise<User | null> => {
-    try {
-      const response = await api.get<User>("/api/me")
+  // const fetchUser = async (): Promise<User | null> => {
+  //   try {
+  //     const response = await api.get<User>("/api/me")
 
-      return response.data
-    } catch (error) {
-      console.error("Failed to fetch user: ", parseAxiosError(error))
-      return null
-    }
-  }
+  //     return response.data
+  //   } catch (error) {
+  //     console.error("Failed to fetch user: ", parseAxiosError(error))
+  //     return null
+  //   }
+  // }
 
   const login = async (formData: LoginForm): Promise<void> => {
     try {
-      const response = await api.post<User>("/api/auth", formData)
+      const response = await api.post<User>("/api/auth/jwt/create/", formData)
 
       setUser(response.data)
     } catch (error) {
@@ -84,7 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const register = async (formData: RegisterForm): Promise<User> => {
     try {
-      const response = await api.post<User>("/api/register", formData)
+      const response = await api.post<User>("/api/auth/users/", formData)
 
       setUser(response.data)
       return response.data
@@ -97,7 +101,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = async () => {
     try {
-      await api.post("/api/logout")
+      await api.post("/auth/token/logout")
     } catch (error) {
       console.error("Logout error: ", parseAxiosError(error))
       throw parseAxiosError(error)
@@ -106,14 +110,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }
 
-  useEffect(() => {
-    const initialize = async () => {
-      const currentUser = await fetchUser()
-      setUser(currentUser)
-      setLoading(false)
-    }
-    initialize()
-  }, [])
+  // useEffect(() => {
+  //   const initialize = async () => {
+  //     const currentUser = await fetchUser()
+  //     setUser(currentUser)
+  //     setLoading(false)
+  //   }
+  //   initialize()
+  // }, [])
 
   return (
     <AuthContext.Provider value={{ user, loading, login, register, logout }}>

@@ -1,57 +1,60 @@
 "use client"
 
 import { useAuth } from "@/context/AuthContext"
+import { parseAxiosError } from "@/utils/apiErrors"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 
 interface Errors {
-  username?: string
+  name?: string
   email?: string
   password?: string
-  confirmPassword?: string
+  re_password?: string
 }
 
 interface FormData {
-  username: string
+  name: string
   email: string
   password: string
-  confirmPassword: string
+  re_password: string
 }
 
 const initialFormData: FormData = {
-  username: "",
+  name: "",
   email: "",
   password: "",
-  confirmPassword: "",
+  re_password: "",
 }
 
 const validate = (form: FormData): Errors => {
-  const newErrors: Errors = {}
+  const errors: Errors = {}
 
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
-  if (!form.username) newErrors.username = "Username is required"
+  if (!form.name) {
+    errors.name = "Name is required"
+  }
 
   if (!form.email) {
-    newErrors.email = "Email is required"
+    errors.email = "Email is required"
   } else if (!isValidEmail(form.email)) {
-    newErrors.email = "Email is invalid"
+    errors.email = "Email is invalid"
   }
 
   if (!form.password) {
-    newErrors.password = "Password is required"
-  } else if (form.password.length < 6) {
-    newErrors.password = "Password must be at least 6 characters"
+    errors.password = "Password is required"
+  } else if (form.password.length < 8) {
+    errors.password = "Password must be at least 8 characters"
   }
 
-  if (!form.confirmPassword) {
-    newErrors.confirmPassword = "Please confirm your password"
-  } else if (form.password !== form.confirmPassword) {
-    newErrors.confirmPassword = "Passwords do not match"
+  if (!form.re_password) {
+    errors.re_password = "Please confirm your password"
+  } else if (form.password !== form.re_password) {
+    errors.re_password = "Passwords do not match"
   }
 
-  return newErrors
+  return errors
 }
 
 const page = () => {
@@ -59,15 +62,16 @@ const page = () => {
   const [errors, setErrors] = useState<Errors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
-  const { register } = useAuth()
-  const router = useRouter()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const router = useRouter()
+  const { register } = useAuth()
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setServerError("")
 
@@ -82,19 +86,12 @@ const page = () => {
     setIsLoading(true)
 
     try {
-      await register({
-        username: form.username,
-        email: form.email,
-        password: form.password,
-      })
+      await register(form)
 
       router.push("/login")
-    } catch (error) {
-      if (error instanceof Error) {
-        setServerError(error.message)
-      } else {
-        setServerError("An unexpected error occurred")
-      }
+    } catch (error: unknown) {
+      const { message } = parseAxiosError(error)
+      setServerError(message)
     } finally {
       setIsLoading(false)
     }
@@ -116,14 +113,12 @@ const page = () => {
               className="input"
               placeholder="Username"
               type="text"
-              name="username"
-              value={form.username}
+              name="name"
+              value={form.name}
               onChange={handleChange}
               required
             />
-            <p className="text-red-500 text-xs">
-              {errors.username || "\u00A0"}
-            </p>
+            <p className="text-red-500 text-xs">{errors.name || "\u00A0"}</p>
           </div>
 
           <div>
@@ -159,13 +154,13 @@ const page = () => {
               className="input"
               placeholder="Confirm Password"
               type="password"
-              name="confirmPassword"
-              value={form.confirmPassword}
+              name="re_password"
+              value={form.re_password}
               onChange={handleChange}
               required
             />
             <p className="text-red-500 text-xs">
-              {errors.confirmPassword || "\u00A0"}
+              {errors.re_password || "\u00A0"}
             </p>
           </div>
 

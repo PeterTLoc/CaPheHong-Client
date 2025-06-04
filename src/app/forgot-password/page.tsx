@@ -1,5 +1,7 @@
 "use client"
 
+import { parseAxiosError } from "@/utils/apiErrors"
+import axios from "axios"
 import React, { useState } from "react"
 
 const validate = (email: string): string => {
@@ -17,8 +19,8 @@ const validate = (email: string): string => {
 
 const page = () => {
   const [email, setEmail] = useState("")
-  const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
 
@@ -31,7 +33,6 @@ const page = () => {
 
     if (validationError) {
       setError(validationError)
-      setIsLoading(false)
       return
     }
 
@@ -39,20 +40,16 @@ const page = () => {
     setIsLoading(true)
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/forgot-password/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      })
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL
+      const response = await axios.post(
+        `${apiUrl}/api/auth/users/reset_password/`,
+        { email },
+      )
 
-      const data = await res.json()
-
-      if (!res.ok) {
-        setServerError(data.message || "Failed to send reset link")
-        return
-      }
-    } catch (err) {
-      setServerError("Server error. Please try again.")
+      setSuccess(true)
+    } catch (error: unknown) {
+      const { message } = parseAxiosError(error)
+      setServerError(message)
     } finally {
       setIsLoading(false)
     }
