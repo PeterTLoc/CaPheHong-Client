@@ -73,6 +73,7 @@ const page = () => {
     setIsLoading(true)
 
     try {
+<<<<<<< HEAD:src/app/password-reset/[uid]/[token]/page.tsx
       const apiUrl = process.env.NEXT_PUBLIC_API_URL
       const response = await axios.post(
         `${apiUrl}/api/auth/users/reset_password_confirm/`,
@@ -83,6 +84,20 @@ const page = () => {
         }
       )
       console.log("Reset password response:", response.data)
+=======
+      const res = await fetch(`https://caphehong.shop:8000/api/reset-password/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: form.password, token }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setServerError(data.message || "Reset password failed")
+        return
+      }
+>>>>>>> 9a145a3 ('caphehong.shop'):src/app/reset-password/page.tsx
 
       router.push("/")
     } catch (error: unknown) {

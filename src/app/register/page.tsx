@@ -86,7 +86,25 @@ const page = () => {
     setIsLoading(true)
 
     try {
+<<<<<<< HEAD
       await register(form)
+=======
+      const res = await fetch(`https://caphehong.shop:8000/api/register/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setServerError(data.message || "Registration failed")
+        return
+      }
+>>>>>>> 9a145a3 ('caphehong.shop')
 
       router.push("/login")
     } catch (error: unknown) {

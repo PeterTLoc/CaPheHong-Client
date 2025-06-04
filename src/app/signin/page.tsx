@@ -71,7 +71,21 @@ const page = () => {
     setIsLoading(true)
 
     try {
+<<<<<<< HEAD
       await login(form)
+=======
+      const res = await fetch("https://caphehong.shop:8000/api/auth/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+        //credentials: "include",
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}))
+        throw new Error(errorData.message || "Login failed")
+      }
+>>>>>>> 9a145a3 ('caphehong.shop')
 
       router.push("/")
     } catch (error: unknown) {
