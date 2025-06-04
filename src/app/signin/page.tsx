@@ -83,7 +83,6 @@ const page = () => {
         const errorData = await res.json().catch(() => ({}))
         throw new Error(errorData.message || "Login failed")
       }
- 9a145a3 ('caphehong.shop')
 
       router.push("/")
     } catch (error: unknown) {
