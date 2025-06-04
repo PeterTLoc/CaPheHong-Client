@@ -88,7 +88,7 @@ const page = () => {
     try {
       await register(form)
 
-      const res = await fetch(`https://caphehong.shop:8000/api/register/`, {
+      const res = await fetch(`https://caphehong.shop/api/register/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
