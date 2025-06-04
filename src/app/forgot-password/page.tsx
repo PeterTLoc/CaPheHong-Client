@@ -40,19 +40,19 @@ const page = () => {
     setIsLoading(true)
 
     try {
-<<<<<<< HEAD
+
       const apiUrl = process.env.NEXT_PUBLIC_API_URL
       const response = await axios.post(
         `${apiUrl}/api/auth/users/reset_password/`,
         { email },
       )
-=======
+
       const res = await fetch(`https://caphehong.shop:8000/api/forgot-password/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       })
->>>>>>> 9a145a3 ('caphehong.shop')
+
 
       setSuccess(true)
     } catch (error: unknown) {
