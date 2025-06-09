@@ -10,7 +10,7 @@ const NavbarWrapper = ({ children }: { children: React.ReactNode }) => {
     pathname === "/signin" ||
     pathname === "/register" ||
     pathname === "/forgot-password" ||
-    pathname === "/password-reset"
+    pathname.startsWith("/password-reset/")
 
   return (
     <>

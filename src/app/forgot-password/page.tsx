@@ -1,20 +1,16 @@
 "use client"
 
 import { parseAxiosError } from "@/utils/apiErrors"
+import { validateEmail } from "@/utils/authValidation"
 import axios from "axios"
 import React, { useState } from "react"
 
-const validate = (email: string): string => {
-  const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
-  if (!email) {
-    return "Email is required"
-  } else if (!isValidEmail(email)) {
-    return "Email is invalid"
-  }
-
-  return ""
+if (!apiUrl) {
+  throw new Error(
+    "NEXT_PUBLIC_API_URL must be defined in environment variables."
+  )
 }
 
 const page = () => {
@@ -29,7 +25,7 @@ const page = () => {
     setServerError("")
     setSuccess(false)
 
-    const validationError = validate(email)
+    const validationError = validateEmail(email)
 
     if (validationError) {
       setError(validationError)
@@ -40,11 +36,7 @@ const page = () => {
     setIsLoading(true)
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL
-      const response = await axios.post(
-        `${apiUrl}/api/auth/users/reset_password/`,
-        { email },
-      )
+      await axios.post(`${apiUrl}/api/auth/users/reset_password/`, { email })
 
       setSuccess(true)
     } catch (error: unknown) {
@@ -58,12 +50,12 @@ const page = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <form
-        className="flex flex-col bg-[#FBFBFB] p-6 border border-[#E5E5E5] rounded-md"
+        className="flex flex-col bg-[#FBFBFB] p-5 border border-[#E5E5E5] rounded-md"
         onSubmit={handleSubmit}
       >
-        <h1 className="text-[26px] font-bold">Forgot Password</h1>
+        <h1 className="text-[26px] font-bold mb-6">Forgot Password</h1>
 
-        <div className="mt-[28px] w-fit flex flex-col">
+        <div className="w-fit flex flex-col mb-6">
           <input
             className="input"
             placeholder="Email"
@@ -73,11 +65,12 @@ const page = () => {
             required
           />
         </div>
-        <p className="text-red-500 text-xs">{error || "\u00A0"}</p>
+        {error && <p className="text-red-500 text-xs">{error}</p>}
 
         <button
-          className="self-end text-white mt-7 min-w-[130px] w-fit min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#6F4E37] hover:opacity-75"
+          className="self-end text-white min-w-[130px] w-fit min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#6F4E37] hover:opacity-75"
           type="submit"
+          
         >
           {isLoading ? "Sending..." : "Send reset link"}
         </button>

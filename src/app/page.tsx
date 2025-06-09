@@ -8,9 +8,9 @@ export default function Home() {
       }}
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
-        <div className="flex justify-center">
+        <div className="flex justify-center p-4">
           <main className="text-white flex flex-col justify-center">
-            <h1 className="font-bold text-4xl whitespace-nowrap">
+            <h1 className="font-bold text-4xl">
               Experience the Richness of Perfect Coffee
             </h1>
             <p className="text-sm mt-3">

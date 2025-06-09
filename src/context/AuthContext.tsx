@@ -1,46 +1,26 @@
 "use client"
 
+import { AuthContextType, LoginForm, RegisterForm, User } from "@/types/auth"
 import { parseAxiosError } from "@/utils/apiErrors"
 import axios from "axios"
-import { createContext, useContext, useEffect, useState } from "react"
-
-interface User {
-  id: number
-  email: string
-  role: string
-  name: string
-}
-
-interface LoginForm {
-  email: string
-  password: string
-}
-
-interface RegisterForm {
-  name: string
-  email: string
-  password: string
-  re_password: string
-}
-
-interface AuthContextType {
-  user: User | null
-  loading: boolean
-  login: (formData: { email: string; password: string }) => Promise<void>
-  register: (formData: {
-    name: string
-    email: string
-    password: string
-    re_password: string
-  }) => Promise<User>
-  logout: () => void
-}
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const useAuth = () => {
   const context = useContext(AuthContext)
-  if (!context) throw new Error("useAuth must be used within AuthProvider")
+
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider")
+  }
+
   return context
 }
 
@@ -49,6 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
   const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
   if (!apiUrl) {
@@ -57,28 +38,62 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     )
   }
 
-  const api = axios.create({
-    baseURL: apiUrl,
-    withCredentials: true,
-    headers: { "Content-Type": "application/json" },
-  })
+  const refreshAccessToken = useCallback(async (): Promise<string | null> => {
+    const refreshToken = localStorage.getItem("refreshToken")
+    if (!refreshToken) return null
 
-  // const fetchUser = async (): Promise<User | null> => {
-  //   try {
-  //     const response = await api.get<User>("/api/me")
+    try {
+      const { data } = await axios.post(`${apiUrl}/api/auth/jwt/refresh/`, {
+        refresh: refreshToken,
+      })
+      const { access } = data
+      localStorage.setItem("accessToken", access)
+      setAccessToken(access)
+      return access
+    } catch (e) {
+      console.error("Refresh token failed", e)
+      return null
+    }
+  }, [apiUrl])
 
-  //     return response.data
-  //   } catch (error) {
-  //     console.error("Failed to fetch user: ", parseAxiosError(error))
-  //     return null
-  //   }
-  // }
+  const fetchUser = async (accessToken: string): Promise<User | null> => {
+    try {
+      const { data } = await axios.get(`${apiUrl}/api/auth/users/me/`, {
+        headers: {
+          Authorization: `JWT ${accessToken}`,
+        },
+        // withCredentials: true,
+      })
+      
+      return data
+    } catch (error) {
+      const parsed = parseAxiosError(error)
+      console.error("Fetch user failed:", parsed.message)
+      throw new Error(parsed.message)
+    }
+  }
 
   const login = async (formData: LoginForm): Promise<void> => {
     try {
-      const response = await api.post<User>("/api/auth/jwt/create/", formData)
+      const { data } = await axios.post(
+        `${apiUrl}/api/auth/jwt/create/`,
+        formData,
+        {
+          // withCredentials: true,
+        }
+      )
+      const { access, refresh } = data
+      localStorage.setItem("accessToken", access)
+      localStorage.setItem("refreshToken", refresh)
+      setAccessToken(access)
 
-      setUser(response.data)
+      const user = await fetchUser(access)
+
+      if (user) {
+        setUser(user)
+      } else {
+        throw new Error("Failed to fetch user after login")
+      }
     } catch (error) {
       const parsed = parseAxiosError(error)
       console.error("Login failed:", parsed.message)
@@ -88,40 +103,98 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const register = async (formData: RegisterForm): Promise<User> => {
     try {
-      const response = await api.post<User>("/api/auth/users/", formData)
+      const { data } = await axios.post(`${apiUrl}/api/auth/users/`, formData, {
+        withCredentials: true,
+      })
 
-      setUser(response.data)
-      return response.data
+      setUser(data)
+      return data
     } catch (error) {
       const parsed = parseAxiosError(error)
-      console.error("Login failed:", parsed.message)
+      console.error("Register failed:", parsed.message)
       throw new Error(parsed.message)
     }
   }
 
   const logout = async () => {
-    try {
-      await api.post("/auth/token/logout")
-    } catch (error) {
-      console.error("Logout error: ", parseAxiosError(error))
-      throw parseAxiosError(error)
-    } finally {
-      setUser(null)
-    }
+    // try {
+    //   await axios.post(`${apiUrl}/api/auth/token/logout/`, null, {
+    //     withCredentials: true,
+    //   })
+    // } catch (error) {
+    //   const parsed = parseAxiosError(error)
+    //   console.error("Logout failed:", parsed.message)
+    //   throw new Error(parsed.message)
+    // } finally {
+    //   localStorage.removeItem("accessToken")
+    //   localStorage.removeItem("refreshToken")
+    //   setUser(null)
+    //   setAccessToken(null)
+    // }
+
+    localStorage.removeItem("accessToken")
+    localStorage.removeItem("refreshToken")
+    setUser(null)
+    setAccessToken(null)
   }
 
-  // useEffect(() => {
-  //   const initialize = async () => {
-  //     const currentUser = await fetchUser()
-  //     setUser(currentUser)
-  //     setLoading(false)
-  //   }
-  //   initialize()
-  // }, [])
+  useEffect(() => {
+    const initialize = async () => {
+      if (!accessToken) {
+        setLoading(false)
+        return
+      }
+      try {
+        const currentUser = await fetchUser(accessToken)
+        setUser(currentUser)
+      } catch {
+        setUser(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+    initialize()
+  }, [accessToken])
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken")
+    if (token) {
+      setAccessToken(token)
+    } else {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const originalRequest = error.config
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true
+          const newAccessToken = await refreshAccessToken()
+
+          if (newAccessToken) {
+            originalRequest.headers["Authorization"] = `JWT ${newAccessToken}`
+            return axios(originalRequest)
+          }
+        }
+        return Promise.reject(error)
+      }
+    )
+
+    return () => {
+      axios.interceptors.response.eject(interceptor)
+    }
+  }, [refreshAccessToken])
+
+  const contextValue = useMemo(
+    () => ({ user, loading, login, register, logout }),
+    [user, loading]
+  )
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   )
 }

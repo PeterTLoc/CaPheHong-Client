@@ -1,50 +1,21 @@
 "use client"
 
 import { useAuth } from "@/context/AuthContext"
+import { LoginForm, LoginFormErrors } from "@/types/auth"
 import { parseAxiosError } from "@/utils/apiErrors"
+import { validateLoginForm } from "@/utils/authValidation"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 
-interface Errors {
-  email?: string
-  password?: string
-}
-
-interface FormData {
-  email: string
-  password: string
-}
-
-const initialFormData: FormData = {
+const initialLoginFormData: LoginForm = {
   email: "",
   password: "",
 }
 
-const validate = (form: FormData): Errors => {
-  const errors: Errors = {}
-
-  const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-
-  if (!form.email) {
-    errors.email = "Email is required"
-  } else if (!isValidEmail(form.email)) {
-    errors.email = "Invalid email format"
-  }
-
-  if (!form.password) {
-    errors.password = "Password is required"
-  } else if (form.password.length < 8) {
-    errors.password = "Password must be at least 8 characters"
-  }
-
-  return errors
-}
-
 const page = () => {
-  const [form, setForm] = useState<FormData>(initialFormData)
-  const [errors, setErrors] = useState<Errors>({})
+  const [form, setForm] = useState<LoginForm>(initialLoginFormData)
+  const [errors, setErrors] = useState<LoginFormErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
 
@@ -60,7 +31,7 @@ const page = () => {
     e.preventDefault()
     setServerError("")
 
-    const validationErrors = validate(form)
+    const validationErrors = validateLoginForm(form)
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
@@ -85,17 +56,12 @@ const page = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <form
-        className="flex flex-col bg-[#FBFBFB] p-6 border border-[#E5E5E5] rounded-md"
+        className="flex flex-col bg-[#FBFBFB] p-5 border border-[#E5E5E5] rounded-md"
         onSubmit={handleSubmit}
       >
-        <h1 className="text-[26px] font-bold self-center">Sign in</h1>
-        {serverError && (
-          <p className="text-red-500 text-xs mt-2 mx-auto w-[280px] text-center">
-            {serverError}
-          </p>
-        )}
+        <h1 className="text-[26px] font-bold self-center mb-6">Sign in</h1>
 
-        <div className="mt-[28px]">
+        <div className="mb-4">
           <input
             className="input"
             placeholder="Email"
@@ -105,10 +71,12 @@ const page = () => {
             onChange={handleChange}
             required
           />
-          <p className="text-red-500 text-xs">{errors.email || "\u00A0"}</p>
+          {errors.email && (
+            <p className="text-red-500 text-xs">{errors.email}</p>
+          )}
         </div>
 
-        <div>
+        <div className="mb-2">
           <input
             className="input"
             placeholder="Password"
@@ -118,10 +86,12 @@ const page = () => {
             onChange={handleChange}
             required
           />
-          <p className="text-red-500 text-xs">{errors.password || "\u00A0"}</p>
+          {errors.password && (
+            <p className="text-red-500 text-xs">{errors.password}</p>
+          )}
         </div>
 
-        <div className="text-[13px] flex justify-between">
+        <div className="text-[13px] flex justify-between mb-6">
           <Link
             className="text-[#5F5F5F] hover:text-black hover:underline"
             href="/forgot-password"
@@ -137,12 +107,19 @@ const page = () => {
         </div>
 
         <button
-          className="text-white mt-7 w-full min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#6F4E37] hover:opacity-75"
+          className="text-white w-full min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#6F4E37] hover:opacity-75"
           type="submit"
+          
         >
           {isLoading ? "Logging in..." : "Login"}
         </button>
       </form>
+
+      {serverError && (
+        <p className="mt-2 text-red-500 text-xs mx-auto w-[280px] text-center">
+          {serverError}
+        </p>
+      )}
     </div>
   )
 }

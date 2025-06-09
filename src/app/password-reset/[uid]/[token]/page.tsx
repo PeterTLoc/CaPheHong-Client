@@ -1,52 +1,34 @@
 "use client"
 
+import { ResetPasswordFormData, ResetPasswordFormErrors } from "@/types/auth"
 import { parseAxiosError } from "@/utils/apiErrors"
+import { validateResetPasswordForm } from "@/utils/authValidation"
 import axios from "axios"
 import { useParams } from "next/navigation"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 
-interface Errors {
-  password?: string
-  re_password?: string
-}
-
-interface FormData {
-  password: string
-  re_password: string
-}
-
-const initialFormData: FormData = {
+const initialResetPasswordFormData: ResetPasswordFormData = {
   password: "",
   re_password: "",
 }
+const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
-const validate = (form: FormData): Errors => {
-  const errors: Errors = {}
-
-  if (!form.password) {
-    errors.password = "Password is required"
-  } else if (form.password.length < 8) {
-    errors.password = "Password must be at least 8 characters"
-  }
-
-  if (!form.re_password) {
-    errors.re_password = "Please confirm your password"
-  } else if (form.password !== form.re_password) {
-    errors.re_password = "Passwords do not match"
-  }
-
-  return errors
+if (!apiUrl) {
+  throw new Error(
+    "NEXT_PUBLIC_API_URL must be defined in environment variables."
+  )
 }
 
 const page = () => {
-  const [form, setForm] = useState<FormData>(initialFormData)
-  const [errors, setErrors] = useState<Errors>({})
+  const [form, setForm] = useState<ResetPasswordFormData>(
+    initialResetPasswordFormData
+  )
+  const [errors, setErrors] = useState<ResetPasswordFormErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
-
+  const { uid, token } = useParams()
   const router = useRouter()
-  const { uid, token } = useParams();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -57,7 +39,7 @@ const page = () => {
     e.preventDefault()
     setServerError("")
 
-    const validationErrors = validate(form)
+    const validationErrors = validateResetPasswordForm(form)
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
@@ -73,16 +55,11 @@ const page = () => {
     setIsLoading(true)
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL
-      const response = await axios.post(
-        `${apiUrl}/api/auth/users/reset_password_confirm/`,
-        {
-          uid: uid,
-          token: token,
-          new_password: form.password,
-        }
-      )
-      console.log("Reset password response:", response.data)
+      await axios.post(`${apiUrl}/api/auth/users/reset_password_confirm/`, {
+        uid: uid,
+        token: token,
+        new_password: form.password,
+      })
 
       router.push("/")
     } catch (error: unknown) {
@@ -96,15 +73,15 @@ const page = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <form
-        className="flex flex-col bg-[#FBFBFB] p-6 border border-[#E5E5E5] rounded-md"
+        className="flex flex-col bg-[#FBFBFB] p-5 border border-[#E5E5E5] rounded-md"
         onSubmit={handleSubmit}
       >
-        <h1 className="text-[26px] font-bold self-center">
+        <h1 className="text-[26px] font-bold self-center mb-6">
           Create a new password
         </h1>
 
-        <div className="mt-[28px] w-fit flex flex-col">
-          <div>
+        <div className="w-fit flex flex-col">
+          <div className="mb-4">
             <input
               className="input"
               placeholder="Password"
@@ -114,12 +91,12 @@ const page = () => {
               onChange={handleChange}
               required
             />
-            <p className="text-red-500 text-xs">
-              {errors.password || "\u00A0"}
-            </p>
+            {errors.password && (
+              <p className="text-red-500 text-xs">{errors.password}</p>
+            )}
           </div>
 
-          <div>
+          <div className="mb-6">
             <input
               className="input"
               placeholder="Confirm Password"
@@ -129,13 +106,13 @@ const page = () => {
               onChange={handleChange}
               required
             />
-            <p className="text-red-500 text-xs">
-              {errors.re_password || "\u00A0"}
-            </p>
+            {errors.re_password && (
+              <p className="text-red-500 text-xs">{errors.re_password}</p>
+            )}
           </div>
 
           <button
-            className="self-end text-white mt-7 min-w-[130px] w-fit min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#6F4E37] hover:opacity-75"
+            className="self-end text-white min-w-[130px] w-fit min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#6F4E37] hover:opacity-75"
             type="submit"
           >
             {isLoading ? "Loading..." : "Create"}

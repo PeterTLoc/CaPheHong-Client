@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F3F3F3;
+  --background: #f3f3f3;
   --foreground: #171717;
 }
 
@@ -14,7 +14,7 @@
 
 @media (prefers-color-scheme: light) {
   :root {
-    --background: #F3F3F3;
+    --background: #f3f3f3;
     --foreground: black;
   }
 }
@@ -26,13 +26,13 @@ body {
 }
 
 .input {
-  @apply min-w-[280px] min-h-[32px] pt-[5px] pb-[3px] px-3 rounded-[5px] text-[13px] bg-[#FBFBFB] border border-b-[#868686] border-t-[#E5E5E5] border-l-[#E5E5E5] border-r-[#E5E5E5]
+  @apply min-w-[280px] min-h-[32px] pt-[5px] pb-[3px] px-3 rounded-[5px] text-[13px] bg-[#FBFBFB] border border-b-[#868686] border-t-[#E5E5E5] border-l-[#E5E5E5] border-r-[#E5E5E5];
 }
 
 .input:focus {
-  @apply outline-none border-b-[#6F4E37] bg-[#FFFFFF]
+  @apply outline-none border-b-[#6F4E37] bg-[#FFFFFF];
 }
 
 .button {
-  @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#FEFEFE] border border-b-[#D3D3D3] border-t-[#E5E5E5] border-l-[#E5E5E5] border-r-[#E5E5E5] hover:bg-[#FAFAFA]
+  @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#FEFEFE] border border-b-[#D3D3D3] border-t-[#E5E5E5] border-l-[#E5E5E5] border-r-[#E5E5E5] hover:bg-[#FAFAFA];
 }
