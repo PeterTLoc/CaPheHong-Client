@@ -1,5 +1,6 @@
 "use client"
 
+import CustomDropdown from "@/components/CustomDropdown"
 import { useAuth } from "@/context/AuthContext"
 import { RegisterForm, RegisterFormErrors } from "@/types/auth"
 import { parseAxiosError } from "@/utils/apiErrors"
@@ -19,9 +20,15 @@ const page = () => {
   const [errors, setErrors] = useState<RegisterFormErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
+  const [selected, setSelected] = useState("")
 
   const router = useRouter()
   const { register } = useAuth()
+
+  const options = [
+    { value: "guest", label: "Guest" },
+    { value: "owner", label: "Owner" },
+  ]
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -110,7 +117,7 @@ const page = () => {
             )}
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4">
             <input
               className="input"
               placeholder="Confirm Password"
@@ -125,10 +132,18 @@ const page = () => {
             )}
           </div>
 
+          <div className="mb-6">
+            <CustomDropdown
+              options={options}
+              value={selected}
+              onChange={setSelected}
+              placeholder="Choose role"
+            />
+          </div>
+
           <button
             className="self-end text-white min-w-[130px] w-fit min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#6F4E37] hover:opacity-75"
             type="submit"
-            
           >
             {isLoading ? "Registering..." : "Register"}
           </button>

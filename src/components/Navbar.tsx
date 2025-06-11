@@ -1,78 +1,91 @@
 "user client"
 
-import React, { useEffect, useRef, useState } from "react"
+import React, { useState } from "react"
 import Link from "next/link"
 import { CircleUserRound, Crown, LogOut, Menu, Search } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 
-type ProfileDropdownProps = {
-  logout: () => void
-}
-
 export const Navbar = () => {
   const pathname = usePathname()
   const { user, loading, logout } = useAuth()
-  const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement | null>(null)
+  const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false)
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const links = [
     { href: "/", label: "Home" },
-    { href: "/link1", label: "Link1" },
-    { href: "/link2", label: "Link2" },
+    { href: "/checkout", label: "Checkout" },
   ]
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
 
   return (
     <nav className="sticky top-0 z-50 h-[5.25rem] bg-[#FBFBFB] border-b border-b-[#E5E5E5]">
       <div className="flex justify-between items-center h-full px-4 sm:px-8 lg:px-12">
-        <Link href="/" className="flex items-center">
-          <img
-            src="/images/logoCaPhe.png"
-            alt="Ca Phe Hong Logo"
-            className="h-10 w-auto"
-          />
-          <div className="flex items-end gap-3">
-            <span className="text-xl font-bold">CaPheHong</span>
-            <span>|</span>
-            <span>Site</span>
-          </div>
-        </Link>
-
-        <div className="hidden lg:flex text-sm">
-          {links.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`hover:underline px-5 ${
-                pathname === href
-                  ? "text-[#6F4E37] font-semibold underline"
-                  : ""
-              }`}
+        <div className="flex gap-4 items-center">
+          <div className="relative lg:hidden">
+            <button
+              className="flex items-center"
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
             >
-              {label}
-            </Link>
-          ))}
+              <Menu />
+            </button>
+
+            <div
+              className={`text-[13px] fixed bottom-0 left-0 h-full  p-1 bg-[#FBFBFB] border border-t-[#FBFBFB] border-l-[#FBFBFB] border-b-[#FBFBFB] border-r-[#E5E5E5] z-50 transition-transform duration-300 ease-in-out transform ${
+                isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+              }`}
+              style={{ height: "calc(100vh - 5.25rem)" }}
+            >
+              <div className="flex flex-col">
+                {links.map(({ href, label }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA] ${
+                      pathname === href
+                        ? "text-[#6F4E37] font-semibold underline"
+                        : ""
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <Link href="/" className="flex items-center">
+            <img
+              src="/images/logoCaPhe.png"
+              alt="Ca Phe Hong Logo"
+              className="h-10 w-auto"
+            />
+            <div className="flex items-end gap-3">
+              <span className="text-xl font-bold">CaPheHong</span>
+              <span>|</span>
+              <span>Site</span>
+            </div>
+          </Link>
+
+          <div className="hidden lg:flex text-sm flex-wrap">
+            {links.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`hover:underline px-5 ${
+                  pathname === href
+                    ? "text-[#6F4E37]"
+                    : ""
+                }`}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center gap-4">
           <button className="lg:hidden">
-            <Menu size={22} />
+            <Search strokeWidth={1} />
           </button>
 
           <div className="hidden lg:block">
@@ -86,20 +99,20 @@ export const Navbar = () => {
           </div>
 
           {!loading && user ? (
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative">
               <button
-                onClick={() => setIsOpen((prev) => !prev)}
+                onClick={() => setProfileDropdownOpen((prev) => !prev)}
                 className="flex items-center"
               >
                 {/* Replace with <Image /> or actual image URL */}
                 <CircleUserRound strokeWidth={0.75} size={32} />
               </button>
 
-              {isOpen && (
+              {isProfileDropdownOpen && (
                 <div className="text-[13px] absolute right-0 mt-2 p-1 bg-[#FBFBFB] border border-[#E5E5E5] rounded-[5px] shadow-lg z-50">
                   <Link
                     href="/profile"
-                    className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center  hover:bg-[#EAEAEA]"
+                    className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
                   >
                     <CircleUserRound strokeWidth={1} size={20} />
                     <div className="pt-[10px] pb-[6px]">Profile</div>
@@ -107,7 +120,7 @@ export const Navbar = () => {
 
                   <Link
                     href="/upgrade-plan"
-                    className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center  hover:bg-[#EAEAEA]"
+                    className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
                   >
                     <Crown strokeWidth={1} size={20} />
                     <div className="pt-[10px] pb-[6px]">Upgrade plan</div>

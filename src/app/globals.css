@@ -36,3 +36,7 @@ body {
 .button {
   @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#FEFEFE] border border-b-[#D3D3D3] border-t-[#E5E5E5] border-l-[#E5E5E5] border-r-[#E5E5E5] hover:bg-[#FAFAFA];
 }
+
+.subtitle {
+  @apply text-[13px] font-semibold mt-[1px] mb-[6px]
+}
