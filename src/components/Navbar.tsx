@@ -15,11 +15,13 @@ export const Navbar = () => {
   const links = [
     { href: "/", label: "Home" },
     { href: "/checkout", label: "Checkout" },
+    { href: "/shops", label: "Shops" },
+    { href: "/posts", label: "Posts" },
   ]
 
   return (
-    <nav className="sticky top-0 z-50 h-[5.25rem] bg-[#FBFBFB] border-b border-b-[#E5E5E5]">
-      <div className="flex justify-between items-center h-full px-4 sm:px-8 lg:px-12">
+    <nav className="sticky top-0 z-50 h-[84px] bg-[#FBFBFB] border-b border-b-[#E5E5E5]">
+      <div className="flex justify-between items-center h-full px-4 sm:px-8 lg:px-9">
         <div className="flex gap-4 items-center">
           <div className="relative lg:hidden">
             <button
@@ -53,31 +55,33 @@ export const Navbar = () => {
             </div>
           </div>
 
-          <Link href="/" className="flex items-center">
-            <img
-              src="/images/logoCaPhe.png"
-              alt="Ca Phe Hong Logo"
-              className="h-10 w-auto"
-            />
-            <div className="flex items-end gap-3">
-              <span className="text-xl font-bold">CaPheHong</span>
-              <span>|</span>
-              <span>Site</span>
-            </div>
-          </Link>
+          <div className="pr-7">
+            <Link href="/" className="flex items-center">
+              <img
+                src="/images/logoCaPhe.png"
+                alt="Ca Phe Hong Logo"
+                className="h-10 w-auto"
+              />
+              <div className="flex items-end gap-2.5">
+                <span className="text-xl font-bold">CaPheHong</span>
+                <span className="text-lg text-[#8C8C8C]">|</span>
+                <span>Site</span>
+              </div>
+            </Link>
+          </div>
 
-          <div className="hidden lg:flex text-sm flex-wrap">
+          <div className="hidden lg:flex pt-[9px] text-xs scale-x-115 flex-wrap">
             {links.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`hover:underline px-5 ${
-                  pathname === href
-                    ? "text-[#6F4E37]"
-                    : ""
-                }`}
-              >
-                {label}
+              <Link key={href} href={href} className="px-5">
+                <span
+                  className={`inline-block border-b-2 pb-[5px] ${
+                    pathname === href
+                      ? "border-[#6F4E37] text-[#6F4E37] font-medium"
+                      : "border-transparent"
+                  }`}
+                >
+                  {label}
+                </span>
               </Link>
             ))}
           </div>

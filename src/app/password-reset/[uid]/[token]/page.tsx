@@ -61,7 +61,7 @@ const page = () => {
         new_password: form.password,
       })
 
-      router.push("/")
+      router.push("/signin")
     } catch (error: unknown) {
       const { message } = parseAxiosError(error)
       setServerError(message)

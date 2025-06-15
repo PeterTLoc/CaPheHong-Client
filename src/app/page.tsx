@@ -1,3 +1,7 @@
+"use client"
+
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div
@@ -8,20 +12,21 @@ export default function Home() {
       }}
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
-        <div className="flex justify-center p-4">
+        <div className="flex justify-center p-9">
           <main className="text-white flex flex-col justify-center">
             <h1 className="font-bold text-4xl">
               Experience the Richness of Perfect Coffee
             </h1>
-            <p className="text-sm mt-3">
+            <p className="text-sm mt-1 text-gray-300">
               Premium coffee beans freshly roasted and delivered to your door.
             </p>
-            <button
-              className="mt-6 button font-bold text-black opacity-75 hover:opacity-100 duration-300"
+            <Link
+              className="text-center mt-10 button font-bold text-black opacity-75 hover:opacity-100 duration-300"
               type="submit"
+              href="/shops"
             >
               Browse
-            </button>
+            </Link>
           </main>
         </div>
       </div>
