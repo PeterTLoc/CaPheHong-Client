@@ -16,7 +16,8 @@ const shops = [
     id: 2,
     name: "Cafe Pho Co",
     address: "11 Hang Gai, Hoan Kiem, Hanoi",
-    image: "https://images.unsplash.com/photo-1495474472287-3947222a6b54",
+    image:
+      "https://www.handspan.com/uploads/1%20HANOI%20%26%20AROUND/Hanoi/Blog-%20620x400/Trill-Rooftop-Cafe.jpg",
     recentVisits: 208,
   },
   {
@@ -37,7 +38,8 @@ const shops = [
     id: 5,
     name: "Skyline Sips",
     address: "101 Dinh Tien Hoang, Hanoi",
-    image: "https://images.unsplash.com/photo-1505275350441-1b3f1b67a8e4",
+    image:
+      "https://statics.vinwonders.com/rooftop-bar-in-hanoi-01_1682859725.jpg",
     recentVisits: 49,
   },
 ]
@@ -47,15 +49,19 @@ const options = ["All types", "Open now", "High rating"]
 const page = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [selected, setSelected] = useState(options[0])
-  const dropdownRef = useRef(null)
+  const dropdownRef = useRef<HTMLDivElement>(null); 
 
   // Close dropdown on outside click
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false)
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
@@ -124,9 +130,9 @@ const page = () => {
         {shops.map((shop) => (
           <div
             key={shop.id}
-            className="bg-[#FBFBFB] border border-[#E5E5E5] rounded-[5px] transform transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:cursor-pointer"
+            className="group bg-[#FBFBFB] border border-[#E5E5E5] rounded-[5px] transform transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:cursor-pointer"
           >
-            <div className="relative group">
+            <div className="relative">
               <img
                 src={shop.image}
                 alt={shop.name}

@@ -1,6 +1,6 @@
 "user client"
 
-import React, { useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { CircleUserRound, Crown, LogOut, Menu, Search } from "lucide-react"
 import { usePathname } from "next/navigation"
@@ -11,6 +11,7 @@ export const Navbar = () => {
   const { user, loading, logout } = useAuth()
   const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false)
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const profileDropdownRef = useRef<HTMLDivElement>(null)
 
   const links = [
     { href: "/", label: "Home" },
@@ -18,6 +19,25 @@ export const Navbar = () => {
     { href: "/shops", label: "Shops" },
     { href: "/posts", label: "Posts" },
   ]
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target as Node)
+      ) {
+        setProfileDropdownOpen(false)
+      }
+    }
+
+    if (isProfileDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isProfileDropdownOpen])
 
   return (
     <nav className="sticky top-0 z-50 h-[84px] bg-[#FBFBFB] border-b border-b-[#E5E5E5]">
@@ -74,10 +94,10 @@ export const Navbar = () => {
             {links.map(({ href, label }) => (
               <Link key={href} href={href} className="px-5">
                 <span
-                  className={`inline-block border-b-2 pb-[5px] ${
+                  className={` inline-block border-b-2 pb-[5px] ${
                     pathname === href
                       ? "border-[#6F4E37] text-[#6F4E37] font-medium"
-                      : "border-transparent"
+                      : "border-transparent text-[#5E5E5E]"
                   }`}
                 >
                   {label}
@@ -113,9 +133,13 @@ export const Navbar = () => {
               </button>
 
               {isProfileDropdownOpen && (
-                <div className="text-[13px] absolute right-0 mt-2 p-1 bg-[#FBFBFB] border border-[#E5E5E5] rounded-[5px] shadow-lg z-50">
+                <div
+                  ref={profileDropdownRef}
+                  className="text-[13px] absolute right-0 mt-2 p-1 bg-[#FBFBFB] border border-[#E5E5E5] rounded-[5px] shadow-lg z-50"
+                >
                   <Link
                     href="/profile"
+                    onClick={() => setProfileDropdownOpen(false)}
                     className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
                   >
                     <CircleUserRound strokeWidth={1} size={20} />
@@ -124,6 +148,7 @@ export const Navbar = () => {
 
                   <Link
                     href="/upgrade-plan"
+                    onClick={() => setProfileDropdownOpen(false)}
                     className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
                   >
                     <Crown strokeWidth={1} size={20} />
