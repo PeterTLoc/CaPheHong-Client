@@ -48,3 +48,7 @@ body {
 .container {
   @apply bg-[#FBFBFB] border border-[#E5E5E5] p-5 rounded-[5px]
 }
+
+.sidebar-link {
+  @apply h-9 hover:bg-[#EAEAEA] rounded-[5px] pt-[10px] pb-[3px] px-3 text-[13px]
+}
