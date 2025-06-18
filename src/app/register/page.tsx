@@ -13,6 +13,7 @@ const initialRegisterFormData: RegisterForm = {
   email: "",
   password: "",
   re_password: "",
+  role: "",
 }
 
 const page = () => {
@@ -20,7 +21,6 @@ const page = () => {
   const [errors, setErrors] = useState<RegisterFormErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
-  const [selected, setSelected] = useState("")
 
   const router = useRouter()
   const { register } = useAuth()
@@ -135,10 +135,15 @@ const page = () => {
           <div className="mb-6">
             <CustomDropdown
               options={options}
-              value={selected}
-              onChange={setSelected}
+              value={form.role}
+              onChange={(value) =>
+                setForm((prev) => ({ ...prev, role: value }))
+              }
               placeholder="Choose role"
             />
+            {errors.role && (
+              <p className="text-red-500 text-xs">{errors.role}</p>
+            )}
           </div>
 
           <button

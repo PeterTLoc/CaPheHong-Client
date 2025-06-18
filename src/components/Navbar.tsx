@@ -15,7 +15,6 @@ export const Navbar = () => {
 
   const links = [
     { href: "/", label: "Home" },
-    { href: "/checkout", label: "Checkout" },
     { href: "/shops", label: "Shops" },
     { href: "/posts", label: "Posts" },
   ]

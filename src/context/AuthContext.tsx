@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return
       }
       try {
-        const currentUser = await fetchUser(token)
+        const currentUser = await fetchUser()
         setUser(currentUser)
       } catch {
         setUser(null)

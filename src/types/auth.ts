@@ -20,6 +20,7 @@ export interface RegisterForm {
   email: string
   password: string
   re_password: string
+  role: string
 }
 
 export interface RegisterFormErrors {
@@ -27,6 +28,7 @@ export interface RegisterFormErrors {
   email?: string
   password?: string
   re_password?: string
+  role?: string
 }
 
 export interface AuthContextType {
@@ -38,6 +40,7 @@ export interface AuthContextType {
     email: string
     password: string
     re_password: string
+    role: string
   }) => Promise<User>
   logout: () => void
 }

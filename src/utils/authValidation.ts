@@ -27,6 +27,7 @@ export const validateRegisterForm = (
   form: RegisterForm
 ): RegisterFormErrors => {
   const errors: RegisterFormErrors = {}
+
   const emailError = validateEmail(form.email)
   const passwordError = validatePassword(form.password)
   const passwordMatchError = validatePasswordMatch(
@@ -36,6 +37,10 @@ export const validateRegisterForm = (
 
   if (!form.name) {
     errors.name = "Name is required"
+  }
+
+  if (!form.role) {
+    errors.role = "Role is required"
   }
 
   if (emailError) {

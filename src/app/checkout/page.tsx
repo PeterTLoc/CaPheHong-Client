@@ -10,12 +10,12 @@ const page = () => {
     { value: "paypal", label: "PayPal" },
   ]
   return (
-    <div className="flex justify-center">
-      <div className="flex flex-col max-w-[1000px] w-full m-4">
-        <h1 className="font-bold text-[26px] mb-[20px]">Check out</h1>
+    <div className="px-5">
+      <div className="max-w-[1000px] w-full mx-auto">
+        <h1 className="title">Check out</h1>
 
         <div className="grid grid-cols-3 gap-1">
-          <div className="col-span-2 bg-[#FBFBFB] p-5 border border-[#ECECEC] rounded-[5px] h-fit ">
+          <div className="col-span-2 container h-fit ">
             <h2 className="subtitle">Billing Details</h2>
             <div className="grid grid-cols-2 gap-[10px] mb-[28px]">
               <input type="text" placeholder="Full Name" className="input" />
@@ -41,7 +41,7 @@ const page = () => {
             </div>
           </div>
 
-          <div className="col-span-1 bg-[#FBFBFB] p-5 border border-[#ECECEC] rounded-[5px] h-fit ">
+          <div className="col-span-1 container h-fit ">
             <h2 className="subtitle mb-[28px]">Order Summary</h2>
             <div className="text-[13px] flex flex-col">
               <div className="flex justify-between">
