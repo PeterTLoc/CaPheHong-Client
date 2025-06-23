@@ -7,7 +7,7 @@ import { Navbar } from "./Navbar"
 const NavbarWrapper = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()
   const hideNav =
-    pathname === "/signin" ||
+    pathname === "/login" ||
     pathname === "/register" ||
     pathname === "/forgot-password" ||
     pathname.startsWith("/password-reset/")

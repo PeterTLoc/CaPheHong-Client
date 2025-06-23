@@ -13,7 +13,7 @@ const initialRegisterFormData: RegisterForm = {
   email: "",
   password: "",
   re_password: "",
-  role: "",
+  role: ""
 }
 
 const page = () => {

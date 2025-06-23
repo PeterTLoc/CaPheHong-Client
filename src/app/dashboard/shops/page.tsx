@@ -4,7 +4,7 @@ import React from "react"
 import { shops } from "@/data/shop"
 import { useRouter } from "next/navigation"
 
-const ShopListPage = () => {
+const page = () => {
   const router = useRouter()
 
   const handleEdit = (id: number) => {
@@ -12,38 +12,72 @@ const ShopListPage = () => {
   }
 
   const handleDelete = (id: number) => {
-    // You can add a confirmation modal here
     console.log("Delete shop with ID:", id)
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Manage Shops</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {shops.map((shop) => (
-          <div key={shop.id} className="border p-4 rounded shadow-sm bg-white">
-            <h2 className="text-lg font-semibold">{shop.name}</h2>
-            <p className="text-sm text-gray-600">{shop.address}</p>
-            <p className="text-sm text-gray-500">Owner: {shop.owner}</p>
-            <div className="flex gap-2 mt-4">
-              <button
-                onClick={() => handleEdit(shop.id)}
-                className="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded text-sm"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(shop.id)}
-                className="text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+    <div>
+      <h1 className="title">Shops</h1>
+      <table className="container">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
+              Image
+            </th>
+            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
+              Name
+            </th>
+            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
+              Description
+            </th>
+            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
+              Address
+            </th>
+            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {shops.map((shop) => (
+            <tr key={shop.id} className="hover:bg-gray-50">
+              <td className="px-4 py-2">
+                <img
+                  src={shop.image}
+                  alt={shop.name}
+                  className="w-16 h-16 object-cover rounded"
+                />
+              </td>
+              <td className="px-4 py-2 text-sm font-semibold">{shop.name}</td>
+              <td className="px-4 py-2 text-sm text-gray-600">
+                {shop.description}
+              </td>
+              <td className="px-4 py-2 text-sm text-gray-600">
+                {shop.address}
+              </td>
+              <td className="px-4 py-2 space-x-2 text-sm flex">
+                <button
+                  onClick={() => handleEdit(shop.id)}
+                  className="hover:cursor-pointer"
+                >
+                  Edit
+                </button>
+
+                <p>|</p>
+
+                <button
+                  onClick={() => handleDelete(shop.id)}
+                  className="text-red-400 hover:cursor-pointer"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }
 
-export default ShopListPage
+export default page

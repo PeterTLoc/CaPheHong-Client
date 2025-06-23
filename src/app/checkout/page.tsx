@@ -1,74 +1,120 @@
 "use client"
 
-import CustomDropdown from "@/components/CustomDropdown"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { ChevronRight } from "lucide-react"
 
-const page = () => {
-  const [selected, setSelected] = useState("")
-  const options = [
-    { value: "vnpay", label: "VNPAY" },
-    { value: "paypal", label: "PayPal" },
-  ]
+import { startCheckout } from "@/services/payment/checkoutService"
+import { Shop } from "@/types/models/shop"
+import { shops } from "@/data/shop"
+
+const paymentMethods = [
+  {
+    id: "payos",
+    name: "PayOS",
+    logo: "/images/payment-logo/payos-logo.svg",
+    disabled: false,
+  },
+  {
+    id: "momo",
+    name: "Momo",
+    logo: "/images/payment-logo/momo-logo.png",
+    disabled: false,
+  },
+  {
+    id: "zalopay",
+    name: "ZaloPay",
+    logo: "/images/payment-logo/zalopay-logo.png",
+    disabled: false,
+  },
+]
+
+const CheckoutPage = () => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const shopId = searchParams.get("shopId")
+
+  const [shop, setShop] = useState<Shop | null>(null)
+
+  useEffect(() => {
+    if (!shopId) return
+    const matchedShop = shops.find((s) => s.id === Number(shopId))
+    setShop(matchedShop || null)
+  }, [shopId])
+
+  const handleCheckout = async (methodId: string, methodName: string) => {
+    try {
+      const checkoutUrl = await startCheckout(methodId as any, {
+        orderId: `ORDER-${Date.now()}`,
+        amount: 100000,
+        description: `Demo payment via ${methodName}`,
+      })
+      window.location.href = checkoutUrl
+    } catch (error) {
+      console.error("Payment error:", error)
+      alert("Something went wrong during payment.")
+    }
+  }
+
   return (
     <div className="px-5">
-      <div className="max-w-[1000px] w-full mx-auto">
-        <h1 className="title">Check out</h1>
+      <div className="max-w-[1000px] mx-auto space-y-6">
+        {/* Breadcrumbs */}
+        <div className="title text-[#5F5F5F]">
+          <span
+            onClick={() => router.push("/shops")}
+            className="hover:cursor-pointer hover:text-black"
+          >
+            Shops
+          </span>
+          <span className="mx-4">›</span>
+          <span
+            onClick={() => router.push(`/shops/${shop?.id}`)}
+            className="hover:cursor-pointer hover:text-black"
+          >
+            {shop?.name || "Unknown Shop"}
+          </span>
 
-        <div className="grid grid-cols-3 gap-1">
-          <div className="col-span-2 container h-fit ">
-            <h2 className="subtitle">Billing Details</h2>
-            <div className="grid grid-cols-2 gap-[10px] mb-[28px]">
-              <input type="text" placeholder="Full Name" className="input" />
-              <input
-                type="email"
-                placeholder="Email Address"
-                className="input"
-              />
-              <input type="text" placeholder="Address" className="input" />
-              <input type="text" placeholder="City" className="input" />
-              <input type="text" placeholder="State" className="input" />
-              <input type="text" placeholder="Zip Code" className="input" />
-            </div>
+          <span className="mx-4 text-black">›</span>
+          <span className="text-black">Checkout</span>
+        </div>
 
-            <h2 className="subtitle">Payment Method</h2>
-            <div className="w-fit">
-              <CustomDropdown
-                options={options}
-                value={selected}
-                onChange={setSelected}
-                placeholder="Choose payment"
-              />
-            </div>
-          </div>
+        <div>
+          <h2 className="subtitle mb-3">Choose a payment method</h2>
+          <div className="flex flex-col gap-[3px]">
+            {paymentMethods.map((method) => (
+              <div
+                key={method.id}
+                onClick={() =>
+                  !method.disabled && handleCheckout(method.id, method.name)
+                }
+                className={`bg-[#FBFBFB] border p-5 rounded-[5px] h-[69px] flex items-center justify-between transition
+                  ${
+                    method.disabled
+                      ? "opacity-50 cursor-not-allowed bg-gray-100 border-gray-200"
+                      : "cursor-pointer border-[#E5E5E5] hover:bg-[#F6F6F6]"
+                  }`}
+              >
+                <div className="flex items-center gap-5">
+                  <img
+                    src={method.logo}
+                    alt={`${method.name} logo`}
+                    className="w-6 h-6 object-contain"
+                  />
 
-          <div className="col-span-1 container h-fit ">
-            <h2 className="subtitle mb-[28px]">Order Summary</h2>
-            <div className="text-[13px] flex flex-col">
-              <div className="flex justify-between">
-                <div className="flex flex-col gap-[5px] ">
-                  <span>Item 1</span>
-                  <span>Item 2</span>
+                  <div className="flex flex-col">
+                    <span className="text-[13px] font-medium">
+                      {method.name}
+                    </span>
+                    <span className="text-xs text-[#8B8B8B]">
+                      Pay with {method.name}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex flex-col gap-[5px]">
-                  <span>$19.99</span>
-                  <span>$29.99</span>
-                </div>
+                <ChevronRight strokeWidth={1} size={20} />
               </div>
-
-              <div className="bg-black h-[1px] my-[5px]"></div>
-
-              <div className="flex justify-between">
-                <span className="font-bold">Total</span>
-                <span className="font-bold">$49.98</span>
-              </div>
-            </div>
-
-            <div className="mt-[28px] flex justify-end">
-              <button className="text-white w-fit h-fit min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#6F4E37] hover:opacity-80 duration-300">
-                Place Order
-              </button>
-            </div>
+            ))}
           </div>
         </div>
       </div>
@@ -76,4 +122,4 @@ const page = () => {
   )
 }
 
-export default page
+export default CheckoutPage

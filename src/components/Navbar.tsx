@@ -137,12 +137,14 @@ export const Navbar = () => {
                   className="text-[13px] absolute right-0 mt-2 p-1 bg-[#FBFBFB] border border-[#E5E5E5] rounded-[5px] shadow-lg z-50"
                 >
                   <Link
-                    href="/profile"
+                    href={user?.role === "guest" ? "/profile" : "/dashboard"}
                     onClick={() => setProfileDropdownOpen(false)}
                     className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
                   >
                     <CircleUserRound strokeWidth={1} size={20} />
-                    <div className="pt-[10px] pb-[6px]">Profile</div>
+                    <span className="pt-[10px] pb-[6px]">
+                      {user?.role === "guest" ? "Profile" : "Dashboard"}
+                    </span>
                   </Link>
 
                   <Link
@@ -166,7 +168,7 @@ export const Navbar = () => {
             </div>
           ) : (
             !loading && (
-              <Link href="/signin">
+              <Link href="/login">
                 <button
                   className="flex items-center justify-center gap-1 text-white px-4 w-fit min-h-[33px] rounded-[5px] text-[13px] bg-[#6F4E37] hover:opacity-75"
                   type="submit"

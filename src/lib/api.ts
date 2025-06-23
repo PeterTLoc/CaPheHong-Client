@@ -11,6 +11,7 @@ export const api = axios.create({
 // Request interceptor: attach token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken")
+  console.log(token)
   if (token) {
     config.headers.Authorization = `JWT ${token}`
   }

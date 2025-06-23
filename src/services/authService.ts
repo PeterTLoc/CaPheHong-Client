@@ -1,4 +1,4 @@
-import { api } from "@/lib/axios"
+import { api } from "@/lib/api"
 import { LoginForm, RegisterForm, User } from "@/types/auth"
 import { parseAxiosError } from "@/utils/apiErrors"
 
@@ -33,9 +33,15 @@ export const registerUser = async (formData: RegisterForm): Promise<User> => {
 }
 
 export const fetchUser = async (): Promise<User> => {
+  const accessToken = localStorage.getItem("accessToken")
+
+  if (!accessToken) {
+    throw new Error("No access token found. User may not be logged in.")
+  }
+
   try {
-    const { data } = await api.get("/api/auth/users/me/")
-    return data
+    const { data } = await api.get("/api/auth/users/")
+    return Array.isArray(data) ? data[0] : data
   } catch (error) {
     const parsed = parseAxiosError(error)
     throw new Error(parsed.message)

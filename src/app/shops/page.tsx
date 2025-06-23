@@ -18,8 +18,8 @@ const Page = () => {
 
   return (
     <div className="px-5">
-      <div className="max-w-[1000px] mx-auto">
-        <h1 className="title">Discover Coffee Shops</h1>
+      <div className="max-w-[1625px] mx-auto">
+        <h1 className="title text-center">Discover Coffee Shops</h1>
 
         <div className="flex justify-between items-center mb-3">
           {shops.length > 0 && (

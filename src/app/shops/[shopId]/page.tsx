@@ -21,7 +21,7 @@ const page = () => {
         <div className="title">
           <span
             onClick={() => router.push("/shops")}
-            className="text-[#5F5F5F] hover:cursor-pointer"
+            className="text-[#5F5F5F] hover:cursor-pointer hover:text-black"
           >
             Shops
           </span>

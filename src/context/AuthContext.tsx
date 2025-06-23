@@ -11,6 +11,7 @@ import {
   useState,
 } from "react"
 import { loginUser, registerUser, fetchUser } from "@/services/authService"
+import { useRouter } from "next/navigation"
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 AuthContext.displayName = "AuthContext"
@@ -28,12 +29,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   const login = useCallback(async (formData: LoginForm): Promise<void> => {
     try {
       const { access, refresh, user } = await loginUser(formData)
       localStorage.setItem("accessToken", access)
       localStorage.setItem("refreshToken", refresh)
+
+      console.log("User data", user)
       setUser(user)
     } catch (error) {
       const parsed = parseAxiosError(error)
@@ -61,6 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.removeItem("accessToken")
     localStorage.removeItem("refreshToken")
     setUser(null)
+    router.push("/login")
   }, [])
 
   useEffect(() => {

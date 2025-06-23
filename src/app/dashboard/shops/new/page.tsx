@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import axios from "axios"
+import { createShop } from "@/services/shopService"
 
-const AddShopPage = () => {
+const page = () => {
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [location, setLocation] = useState("")
@@ -14,18 +14,17 @@ const AddShopPage = () => {
     e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     const textarea = e.target
-    textarea.style.height = "auto" // Reset height
-    textarea.style.height = `${textarea.scrollHeight}px` // Set to content height
+    textarea.style.height = "auto"
+    textarea.style.height = `${textarea.scrollHeight}px`
     setDescription(e.target.value)
   }
 
   useEffect(() => {
-    // Generate preview when image changes
     if (image) {
       const objectUrl = URL.createObjectURL(image)
       setPreviewUrl(objectUrl)
 
-      return () => URL.revokeObjectURL(objectUrl) // Cleanup
+      return () => URL.revokeObjectURL(objectUrl)
     }
   }, [image])
 
@@ -38,25 +37,14 @@ const AddShopPage = () => {
       return
     }
 
-    const formData = new FormData()
-    formData.append("name", name)
-    formData.append("description", description)
-    formData.append("location", location)
-    if (image) {
-      formData.append("image", image)
-    }
-
     try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/shops/`,
-        formData,
-        {
-          headers: {
-            Authorization: `JWT ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
+      await createShop(token, {
+        name,
+        description,
+        location,
+        image,
+      })
+
       alert("Shop submitted!")
       setName("")
       setDescription("")
@@ -71,10 +59,9 @@ const AddShopPage = () => {
 
   return (
     <div>
-      <h1 className="title">Add New Shop</h1>
+      <h1 className="title">Add Shop</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-        {/* LEFT: Image Preview */}
         <div className="container">
           <div className="w-full h-full overflow-hidden">
             {previewUrl ? (
@@ -91,7 +78,6 @@ const AddShopPage = () => {
           </div>
         </div>
 
-        {/* RIGHT: Form */}
         <div className="container">
           <form onSubmit={handleSubmit} className="flex flex-col gap-[10px]">
             <div className="flex justify-between items-center">
@@ -159,4 +145,4 @@ const AddShopPage = () => {
   )
 }
 
-export default AddShopPage
+export default page

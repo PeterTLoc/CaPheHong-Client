@@ -37,8 +37,16 @@ body {
   @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#FEFEFE] border border-b-[#D3D3D3] border-t-[#E5E5E5] border-l-[#E5E5E5] border-r-[#E5E5E5] hover:bg-[#FAFAFA];
 }
 
+.button-brown {
+  @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] text-white bg-[#6F4E37] hover:opacity-75;
+}
+
+.button-red {
+  @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] text-white bg-red-400 hover:opacity-75;
+}
+
 .title {
-  @apply font-bold text-[25px] mt-[9px] mb-5
+  @apply font-bold text-[25px] mt-5 mb-5
 }
 
 .subtitle {
