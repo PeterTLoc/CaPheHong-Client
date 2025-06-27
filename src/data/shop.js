@@ -3,6 +3,7 @@ export const shops = [
     id: 1,
     name: "The Roasted Bean",
     address: "123 Coffee St, Hoan Kiem, Hanoi",
+    location: { lat: 21.029449, lng: 105.852736 },
     image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
     recentVisits: 132,
     description:
@@ -12,6 +13,7 @@ export const shops = [
     id: 2,
     name: "Cafe Pho Co",
     address: "11 Hang Gai, Hoan Kiem, Hanoi",
+    location: { lat: 21.033178, lng: 105.852058 },
     image:
       "https://www.handspan.com/uploads/1%20HANOI%20%26%20AROUND/Hanoi/Blog-%20620x400/Trill-Rooftop-Cafe.jpg",
     recentVisits: 208,
@@ -22,6 +24,7 @@ export const shops = [
     id: 3,
     name: "Tranquil Cups",
     address: "78 Tran Hung Dao, Hoan Kiem, Hanoi",
+    location: { lat: 21.025388, lng: 105.84169 },
     image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
     recentVisits: 94,
     description:
@@ -31,6 +34,7 @@ export const shops = [
     id: 4,
     name: "Egg Coffee Haven",
     address: "22 Ta Hien, Hoan Kiem, Hanoi",
+    location: { lat: 21.035362, lng: 105.851343 },
     image: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb",
     recentVisits: 76,
     description:
@@ -40,6 +44,7 @@ export const shops = [
     id: 5,
     name: "Skyline Sips",
     address: "101 Dinh Tien Hoang, Hanoi",
+    location: { lat: 21.033845, lng: 105.85523 },
     image:
       "https://statics.vinwonders.com/rooftop-bar-in-hanoi-01_1682859725.jpg",
     recentVisits: 49,

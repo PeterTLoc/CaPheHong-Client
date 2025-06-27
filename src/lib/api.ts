@@ -11,10 +11,11 @@ export const api = axios.create({
 // Request interceptor: attach token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken")
-  console.log(token)
+
   if (token) {
     config.headers.Authorization = `JWT ${token}`
   }
+
   return config
 })
 
@@ -22,7 +23,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config
+    const originalRequest = error.config as any
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
@@ -34,9 +35,20 @@ api.interceptors.response.use(
         const newAccess = await refreshToken(refresh)
         localStorage.setItem("accessToken", newAccess)
 
+        // Update global default headers
+        api.defaults.headers.common["Authorization"] = `JWT ${newAccess}`
         originalRequest.headers["Authorization"] = `JWT ${newAccess}`
+
         return api(originalRequest)
       } catch (err) {
+        // Cleanup and redirect on refresh failure
+        localStorage.removeItem("accessToken")
+        localStorage.removeItem("refreshToken")
+
+        if (typeof window !== "undefined") {
+          window.location.href = "/login"
+        }
+
         return Promise.reject(err)
       }
     }

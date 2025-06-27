@@ -1,6 +1,6 @@
 "use client"
 
-import CustomDropdown from "@/components/CustomDropdown"
+import CustomDropdown from "@/components/ui/CustomDropdown"
 import { useAuth } from "@/context/AuthContext"
 import { RegisterForm, RegisterFormErrors } from "@/types/auth"
 import { parseAxiosError } from "@/utils/apiErrors"

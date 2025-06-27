@@ -9,7 +9,6 @@ export const loginUser = async (
     const { data } = await api.post("/api/auth/jwt/create/", formData)
     const { access, refresh } = data
 
-    // Save tokens immediately so fetchUser can work with interceptor
     localStorage.setItem("accessToken", access)
     localStorage.setItem("refreshToken", refresh)
 

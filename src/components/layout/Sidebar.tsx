@@ -1,9 +1,9 @@
 "use client"
 
 import { useAuth } from "@/context/AuthContext"
-import SidebarOwner from "./SidebarOwner"
 import SidebarGuest from "./SidebarGuest"
 import SidebarLayout from "./SidebarLayout"
+import SidebarOwner from "./SidebarOwner"
 
 const Sidebar = () => {
   const { user, loading } = useAuth()

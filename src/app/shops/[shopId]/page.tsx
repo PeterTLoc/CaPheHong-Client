@@ -4,6 +4,9 @@ import { useParams, useRouter } from "next/navigation"
 import React from "react"
 import { MapPin } from "lucide-react"
 import { shops } from "@/data/shop"
+import dynamic from "next/dynamic"
+
+const Map = dynamic(() => import("@/components/shops/Map"), { ssr: false })
 
 const page = () => {
   const { shopId } = useParams()
@@ -63,8 +66,12 @@ const page = () => {
             </div>
           </div>
 
-          {/* Placeholder for map */}
-          <div className="container">Map View (coming soon)</div>
+          <div>
+            <p className="subtitle">Map View</p>
+            <div className="container">
+              {shop.location && <Map destination={shop.location} />}
+            </div>
+          </div>
 
           {/* Placeholder for comment */}
           <div className="container">Review and comments (coming soon)</div>
