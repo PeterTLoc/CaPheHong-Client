@@ -1,5 +1,5 @@
 import { api } from "@/lib/api"
-import { PayOSRequest, PayOSResponse } from "@/types/payment/payos"
+import { PayOSRequest, PayOSResponse } from "@/types/payos"
 
 export async function createCheckoutSession({
   orderId,
@@ -12,5 +12,6 @@ export async function createCheckoutSession({
     description,
   })
 
+  console.log(res)
   return res.data
 }

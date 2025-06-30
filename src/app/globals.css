@@ -46,17 +46,37 @@ body {
 }
 
 .title {
-  @apply font-bold text-[25px] mt-5 mb-5
+  @apply font-bold text-[25px] mt-4 mb-5
 }
 
 .subtitle {
-  @apply text-[13px] font-semibold mt-[1px] mb-[6px]
+  @apply text-[13px] font-semibold pt-[33px] pb-[6px]
 }
 
 .container {
   @apply bg-[#FBFBFB] border border-[#E5E5E5] p-5 rounded-[5px]
 }
 
+.container-no-padding {
+  @apply bg-[#FBFBFB] border border-[#E5E5E5] rounded-[5px]
+}
+
 .sidebar-link {
-  @apply h-9 hover:bg-[#EAEAEA] rounded-[5px] pt-[10px] pb-[3px] px-3 text-[13px]
+  @apply h-9 hover:bg-[#EAEAEA] rounded-[5px] px-[10px] text-[13px]
+}
+
+.sidebar-link-text {
+  @apply mt-1
+}
+
+.subtext {
+  @apply text-[#5F5F5F]
+}
+
+.section {
+  @apply bg-[#FBFBFB] border border-[#E5E5E5] p-5 rounded-[5px] h-[69px] flex justify-between items-center text-[13px]
+}
+
+.section-text {
+  @apply pt-[3px]
 }

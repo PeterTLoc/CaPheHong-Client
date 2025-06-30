@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet"
+import { MapContainer, TileLayer, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css"
 import L from "leaflet"

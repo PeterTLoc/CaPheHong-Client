@@ -1,19 +1,82 @@
 import { api } from "@/lib/api"
-import { ShopPayload } from "@/types/models/shop"
+import { Shop, ShopPayload, ShopUpdatePayload } from "@/types/shop"
+import { parseAxiosError } from "@/utils/apiErrors"
 
-export const createShop = async (token: string, data: ShopPayload) => {
-  const formData = new FormData()
-  formData.append("name", data.name)
-  formData.append("description", data.description)
-  formData.append("location", data.location)
-  if (data.image) formData.append("image", data.image)
+export const fetchShops = async (): Promise<Shop[]> => {
+  try {
+    const { data } = await api.get("/api/dashboard/shop")
+    return data
+  } catch (error) {
+    const parsed = parseAxiosError(error)
+    throw new Error(parsed.message)
+  }
+}
 
-  const res = await api.post("/api/shops/", formData, {
-    headers: {
-      Authorization: `JWT ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  })
+export const fetchShopById = async (id: number): Promise<Shop> => {
+  try {
+    const { data } = await api.get(`/api/dashboard/shop/${id}/`)
+    return data
+  } catch (error) {
+    const parsed = parseAxiosError(error)
+    throw new Error(parsed.message)
+  }
+}
 
-  return res.data
+export const createShop = async (payload: ShopPayload): Promise<Shop> => {
+  try {
+    const formData = new FormData()
+    formData.append("title", payload.title)
+    formData.append("body", payload.body)
+    formData.append("slug", payload.slug)
+
+    if (payload.banner instanceof File) {
+      formData.append("banner", payload.banner, payload.banner.name)
+    } else {
+      console.warn(
+        "Expected File for banner, but got string. Skipping image upload."
+      )
+    }
+
+    const { data } = await api.post("/api/dashboard/shop/", formData)
+    return data
+  } catch (error) {
+    const parsed = parseAxiosError(error)
+    throw new Error(parsed.message)
+  }
+}
+
+export const updateShop = async (
+  id: number,
+  payload: ShopUpdatePayload
+): Promise<Shop> => {
+  try {
+    console.log("Received update payload:", payload) // 🔍
+
+    const formData = new FormData()
+
+    if (payload.title !== undefined) formData.append("title", payload.title)
+    if (payload.body !== undefined) formData.append("body", payload.body)
+    if (payload.banner instanceof File) {
+      formData.append("banner", payload.banner, payload.banner.name)
+    }
+
+    for (const [key, value] of formData.entries()) {
+      console.log("FormData entry:", key, value)
+    }
+
+    const { data } = await api.patch(`/api/dashboard/shop/${id}/`, formData)
+    return data
+  } catch (error) {
+    const parsed = parseAxiosError(error)
+    throw new Error(parsed.message)
+  }
+}
+
+export const deleteShop = async (id: number): Promise<void> => {
+  try {
+    await api.delete(`/api/dashboard/shop/${id}/`)
+  } catch (error) {
+    const parsed = parseAxiosError(error)
+    throw new Error(parsed.message)
+  }
 }

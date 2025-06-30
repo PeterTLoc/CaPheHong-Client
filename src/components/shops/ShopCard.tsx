@@ -1,23 +1,18 @@
-"use client"
-
-import React from "react"
 import { MapPin } from "lucide-react"
 
 interface ShopCardProps {
   id: number
-  name: string
-  address: string
-  image: string
-  recentVisits: number
+  title: string
+  body: string
+  banner: string
   onClick: (id: number) => void
 }
 
 export const ShopCard = ({
   id,
-  name,
-  address,
-  image,
-  recentVisits,
+  title,
+  body,
+  banner,
   onClick,
 }: ShopCardProps) => {
   return (
@@ -27,8 +22,8 @@ export const ShopCard = ({
     >
       <div className="relative">
         <img
-          src={image}
-          alt={name}
+          src={banner}
+          alt={title}
           className="rounded-t-[5px] h-40 w-full object-cover"
         />
         <div className="absolute inset-0 bg-black/30 rounded-t-[5px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
@@ -40,13 +35,8 @@ export const ShopCard = ({
       </div>
 
       <div className="text-sm p-3">
-        <h2 className="text-base font-semibold truncate mb-[2px]">{name}</h2>
-        <div className="text-[#616161] truncate flex items-center gap-[2px]">
-          <p>{address}</p>
-        </div>
-        <div className="text-[#6F4E37]">
-          {recentVisits} visits this {recentVisits > 50 ? "week" : "month"}
-        </div>
+        <h2 className="text-base font-semibold truncate mb-[2px]">{title}</h2>
+        <p className="text-[#616161] truncate">{body}</p>
       </div>
     </div>
   )

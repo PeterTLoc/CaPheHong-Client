@@ -1,4 +1,4 @@
-import { createCheckoutSession as payos } from "./gateways/payos"
+import { createCheckoutSession as payos } from "./payos"
 
 export async function startCheckout(
   method: "payos" /* | "momo" */,

@@ -1,83 +1,84 @@
 "use client"
 
-import React from "react"
-import { shops } from "@/data/shop"
-import { useRouter } from "next/navigation"
+import React, { useEffect, useState } from "react"
+import { Shop, ShopPayload, ShopUpdatePayload } from "@/types/shop"
+import AddShopForm from "@/components/shops/owner/AddShopForm"
+import ShopList from "@/components/shops/owner/ShopList"
+import {
+  fetchShops,
+  createShop,
+  updateShop,
+  deleteShop,
+} from "@/services/shopService"
 
-const page = () => {
-  const router = useRouter()
+const ShopsPage = () => {
+  const [shops, setShops] = useState<Shop[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleEdit = (id: number) => {
-    router.push(`/shops/edit/${id}`)
+  useEffect(() => {
+    const loadShops = async () => {
+      try {
+        const data = await fetchShops()
+        setShops(data)
+      } catch (err: any) {
+        setError(err.message || "Failed to load shops")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadShops()
+  }, [])
+
+  const handleAdd = async (payload: ShopPayload) => {
+    try {
+      const newShop = await createShop(payload)
+      setShops((prev) => [newShop, ...prev])
+    } catch (err: any) {
+      alert(err.message || "Failed to add shop")
+    }
   }
 
-  const handleDelete = (id: number) => {
-    console.log("Delete shop with ID:", id)
+  const handleUpdate = async (id: number, payload: ShopUpdatePayload) => {
+    try {
+      const updated = await updateShop(id, payload)
+      setShops((prev) => prev.map((s) => (s.id === id ? updated : s)))
+    } catch (err: any) {
+      alert(err.message || "Failed to update shop")
+    }
+  }
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteShop(id)
+      setShops((prev) => prev.filter((s) => s.id !== id))
+    } catch (err: any) {
+      alert(err.message || "Failed to delete shop")
+    }
   }
 
   return (
-    <div>
+    <main>
       <h1 className="title">Shops</h1>
-      <table className="container">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
-              Image
-            </th>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
-              Name
-            </th>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
-              Description
-            </th>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
-              Address
-            </th>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100">
-          {shops.map((shop) => (
-            <tr key={shop.id} className="hover:bg-gray-50">
-              <td className="px-4 py-2">
-                <img
-                  src={shop.image}
-                  alt={shop.name}
-                  className="w-16 h-16 object-cover rounded"
-                />
-              </td>
-              <td className="px-4 py-2 text-sm font-semibold">{shop.name}</td>
-              <td className="px-4 py-2 text-sm text-gray-600">
-                {shop.description}
-              </td>
-              <td className="px-4 py-2 text-sm text-gray-600">
-                {shop.address}
-              </td>
-              <td className="px-4 py-2 space-x-2 text-sm flex">
-                <button
-                  onClick={() => handleEdit(shop.id)}
-                  className="hover:cursor-pointer"
-                >
-                  Edit
-                </button>
+      <AddShopForm
+        onShopAdded={(shop) => setShops((prev) => [shop, ...prev])}
+      />
+      <h2 className="subtitle">Shop list</h2>
 
-                <p>|</p>
-
-                <button
-                  onClick={() => handleDelete(shop.id)}
-                  className="text-red-400 hover:cursor-pointer"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : (
+        <ShopList
+          shops={shops}
+          onDelete={handleDelete}
+          onUpdate={handleUpdate}
+        />
+      )}
+    </main>
   )
 }
 
-export default page
+export default ShopsPage

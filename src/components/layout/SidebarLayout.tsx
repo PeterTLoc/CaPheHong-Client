@@ -1,12 +1,11 @@
 "use client"
 
 import React from "react"
-import { CircleUserRound } from "lucide-react"
+import { CircleUserRound, LogOut } from "lucide-react"
 import { useAuth } from "@/context/AuthContext"
-import Link from "next/link"
 
 const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
 
   if (!user) {
     return (
@@ -19,7 +18,7 @@ const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
   const accountType = user.role === "owner" ? "Owner account" : "User account"
 
   return (
-    <div className="w-[280px] m-4">
+    <div className="w-[280px] px-5 pt-[19px]">
       <nav className="flex flex-col gap-1">
         <div className="rounded-[5px] pb-[17px] flex items-center gap-[10px]">
           <CircleUserRound strokeWidth={0.5} size={60} />
@@ -31,9 +30,13 @@ const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
 
         {children}
 
-        <Link className="sidebar-link" href="/logout">
-          Logout
-        </Link>
+        <button
+          onClick={logout}
+          className="sidebar-link flex items-center gap-[10px] text-red-500"
+        >
+          <LogOut size={20} strokeWidth={1} />
+          <div>Logout</div>
+        </button>
       </nav>
     </div>
   )
