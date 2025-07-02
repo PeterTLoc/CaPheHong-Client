@@ -61,7 +61,7 @@ const page = () => {
         <div className="flex flex-col gap-1">
           <div className="grid grid-cols-2 gap-1">
             <img
-              src="https://t4.ftcdn.net/jpg/01/05/90/77/360_F_105907729_4RzHYsHJ2UFt5koUI19fc6VzyFPEjeXe.jpg"
+              src={shop.banner}
               alt={shop.title}
               className="w-full h-[300px] object-cover rounded-[5px]"
             />

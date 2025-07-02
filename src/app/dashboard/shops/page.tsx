@@ -60,27 +60,31 @@ const ShopsPage = () => {
 
   return (
     <main>
-      <h1 className="title">Shops</h1>
+      <h1 className="title text-left">Shops</h1>
 
-      {/* Add shop */}
-      <h2 className="subtitle-top">Add shop</h2>
-      <ShopAddModal
-        onShopAdded={(shop) => setShops((prev) => [shop, ...prev])}
-      />
+      <div className="h-[calc(100vh-163px)] overflow-y-auto">
+        <div className="max-w-[1000px]">
+          {/* Add shop */}
+          <h2 className="subtitle-top">Add shop</h2>
+          <ShopAddModal
+            onShopAdded={(shop) => setShops((prev) => [shop, ...prev])}
+          />
 
-      {/* Edit/Delete shop */}
-      <h2 className="subtitle">Shop list</h2>
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
-        <ShopList
-          shops={shops}
-          onDelete={handleDelete}
-          onUpdate={handleUpdate}
-        />
-      )}
+          {/* Edit/Delete shop */}
+          <h2 className="subtitle">Shop list</h2>
+          {loading ? (
+            <p>Loading...</p>
+          ) : error ? (
+            <p className="text-red-500">{error}</p>
+          ) : (
+            <ShopList
+              shops={shops}
+              onDelete={handleDelete}
+              onUpdate={handleUpdate}
+            />
+          )}
+        </div>
+      </div>
     </main>
   )
 }

@@ -12,13 +12,8 @@ export default function DashboardLayout({
       <div className="flex min-h-[calc(100vh-163px)]">
         <Sidebar />
 
-        <div className="flex flex-col flex-1 px-5 overflow-hidden">
-          <div className="w-full max-w-[1000px] mx-auto">
-
-            <main className="h-[calc(100vh-163px)] overflow-y-auto">
-              {children}
-            </main>
-          </div>
+        <div className="flex flex-col flex-1 overflow-hidden">
+          <div className="w-full mx-auto">{children}</div>
         </div>
       </div>
     </RequireAuth>
