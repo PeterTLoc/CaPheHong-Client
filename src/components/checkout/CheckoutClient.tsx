@@ -19,13 +19,13 @@ const paymentMethods = [
     id: "momo",
     name: "Momo",
     logo: "/images/payment-logo/momo-logo.png",
-    disabled: false,
+    disabled: true,
   },
   {
     id: "zalopay",
     name: "ZaloPay",
     logo: "/images/payment-logo/zalopay-logo.png",
-    disabled: false,
+    disabled: true,
   },
 ]
 
@@ -86,7 +86,7 @@ const CheckoutClient = () => {
 
           {/* Plan Summary */}
           <div>
-            <h2 className="subtitle mb-3">Plan Summary</h2>
+            <h2 className="subtitle-top">Plan Summary</h2>
             <div className="container">
               <div className="flex gap-6 text-[13px]">
                 <div>

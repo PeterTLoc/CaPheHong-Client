@@ -3,7 +3,7 @@ import { refreshToken } from "@/services/authService"
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL
 if (!apiUrl) throw new Error("API URL not defined")
-
+  
 export const api = axios.create({
   baseURL: apiUrl,
 })

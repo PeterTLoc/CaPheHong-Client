@@ -6,6 +6,8 @@ import { MapPin } from "lucide-react"
 import dynamic from "next/dynamic"
 import { Shop } from "@/types/shop"
 import { fetchShopById } from "@/services/shopService"
+import { postComment } from "@/services/commentService"
+import { parseAxiosError } from "@/utils/apiErrors"
 
 const Map = dynamic(() => import("@/components/shops/Map"), { ssr: false })
 
@@ -16,6 +18,8 @@ const page = () => {
   const [shop, setShop] = useState<Shop | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [newComment, setNewComment] = useState("")
+  const [posting, setPosting] = useState(false)
 
   useEffect(() => {
     const loadShop = async () => {
@@ -55,47 +59,106 @@ const page = () => {
 
         {/* contents */}
         <div className="flex flex-col gap-1">
-          <div className="container">
+          <div className="grid grid-cols-2 gap-1">
             <img
-              src={shop.banner}
+              src="https://t4.ftcdn.net/jpg/01/05/90/77/360_F_105907729_4RzHYsHJ2UFt5koUI19fc6VzyFPEjeXe.jpg"
               alt={shop.title}
-              className="w-full h-[300px] object-cover"
+              className="w-full h-[300px] object-cover rounded-[5px]"
             />
 
-            <div className="p-5 text-sm space-y-4">
+            <div className="container text-sm space-y-4">
               <div>
                 <h1 className="text-[22px] font-bold">{shop.title}</h1>
-                {/* <p className="text-[#616161] flex items-center gap-1">
-                  <MapPin size={16} strokeWidth={1} />
-                  {shop.address}
-                </p> */}
+                {shop.map && (
+                  <p className="text-[#616161] flex items-center gap-1">
+                    <MapPin size={16} strokeWidth={1} />
+                    {shop.map.address}
+                  </p>
+                )}
               </div>
-
-              {/* <div className="text-[#6F4E37] font-medium">
-                {shop.recentVisits} visits this{" "}
-                {shop.recentVisits > 50 ? "week" : "month"}
-              </div> */}
-
               <p className="text-[#333]">{shop.body}</p>
-
-              <button
-                onClick={() => router.push(`/checkout?shopId=${shop.id}`)}
-                className="text-white w-fit px-3 min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#6F4E37] hover:opacity-75"
-              >
-                Proceed to Checkout
-              </button>
             </div>
           </div>
 
           <div>
             <p className="subtitle">Map View</p>
             <div className="container">
-              {/* {shop.location && <Map destination={shop.location} />} */}
+              {shop.map ? (
+                <Map
+                  destination={{
+                    lat: shop.map.latitude,
+                    lng: shop.map.longitude,
+                  }}
+                />
+              ) : (
+                <p className="text-sm text-gray-500">
+                  No location data available for this shop.
+                </p>
+              )}
             </div>
           </div>
 
-          {/* Placeholder for comment */}
-          <div className="container">Review and comments (coming soon)</div>
+          <h2 className="subtitle">Reviews & Comments</h2>
+          <div className="container space-y-4">
+            {shop.comments.length === 0 ? (
+              <p className="text-sm text-gray-500">No comments yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {shop.comments.map((comment) => (
+                  <li
+                    key={comment.id}
+                    className="border border-gray-200 rounded-lg p-3 bg-gray-50"
+                  >
+                    <div className="text-sm font-semibold">
+                      {comment.author}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(comment.created_at).toLocaleString()}
+                    </div>
+                    <p className="text-sm mt-1">{comment.content}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* Always show the form below */}
+            <div className="space-y-2 mt-4">
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Write your comment..."
+                className="w-full border rounded-lg p-2 text-sm"
+                rows={3}
+              />
+
+              <button
+                onClick={async () => {
+                  if (!newComment.trim()) return
+                  if (!shop) return
+
+                  try {
+                    setPosting(true)
+                    const newCmt = await postComment(shop.id, newComment)
+
+                    setShop({
+                      ...shop,
+                      comments: [...shop.comments, newCmt],
+                    })
+                    setNewComment("")
+                  } catch (error) {
+                    const parsed = parseAxiosError(error)
+                    console.error("Post comment failed:", parsed.message)
+                  } finally {
+                    setPosting(false)
+                  }
+                }}
+                disabled={posting}
+                className="px-3 py-1 text-sm bg-[#6F4E37] text-white rounded hover:opacity-80 disabled:opacity-50"
+              >
+                {posting ? "Posting..." : "Post Comment"}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -11,7 +11,7 @@ import { fetchShops } from "@/services/shopService"
 const options = ["All types", "Open now", "High rating"]
 
 const Page = () => {
-  const [selected, setSelected] = useState(options[0])
+  const [selectedTag, setSelectedTag] = useState<string | null>(null)
   const [shops, setShops] = useState<Shop[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -37,23 +37,32 @@ const Page = () => {
     loadShops()
   }, [])
 
+  const allTags = Array.from(
+    new Set(shops.flatMap((shop) => shop.tags.map((tag) => tag.name)))
+  )
+
+  const filteredShops = selectedTag
+    ? shops.filter((shop) => shop.tags.some((tag) => tag.name === selectedTag))
+    : shops
+
   return (
     <div className="flex">
-      <Sidebar />
+      <Sidebar
+        tags={allTags}
+        activeTag={selectedTag}
+        onTagSelect={setSelectedTag}
+      />
 
       <div className="px-5 flex-1">
         <div className="max-w-[1000px] mx-auto">
           <h1 className="title text-center">Discover Coffee Shops</h1>
 
           <div className="flex justify-between items-center mb-3">
-            {shops.length > 0 && (
-              <div className="text-[13px]">{shops.length} shops found</div>
+            {filteredShops.length > 0 && (
+              <div className="text-[13px]">
+                {filteredShops.length} shops found
+              </div>
             )}
-            <FilterDropdown
-              selected={selected}
-              setSelected={setSelected}
-              options={options}
-            />
           </div>
 
           {loading ? (
@@ -61,7 +70,7 @@ const Page = () => {
           ) : error ? (
             <p className="text-red-500">{error}</p>
           ) : (
-            <ShopGrid shops={shops} onCardClick={handleCardClick} />
+            <ShopGrid shops={filteredShops} onCardClick={handleCardClick} />
           )}
         </div>
       </div>

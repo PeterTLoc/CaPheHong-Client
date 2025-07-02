@@ -12,6 +12,7 @@ export const Navbar = () => {
   const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false)
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false)
   const profileDropdownRef = useRef<HTMLDivElement>(null)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
 
   const links = [
     { href: "/", label: "Home" },
@@ -21,22 +22,28 @@ export const Navbar = () => {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node
+
       if (
         profileDropdownRef.current &&
-        !profileDropdownRef.current.contains(event.target as Node)
+        !profileDropdownRef.current.contains(target)
       ) {
         setProfileDropdownOpen(false)
       }
+
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(target)) {
+        setMobileMenuOpen(false)
+      }
     }
 
-    if (isProfileDropdownOpen) {
+    if (isProfileDropdownOpen || isMobileMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside)
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
-  }, [isProfileDropdownOpen])
+  }, [isProfileDropdownOpen, isMobileMenuOpen])
 
   return (
     <nav className="sticky top-0 z-50 h-[84px] bg-[#FBFBFB] border-b border-b-[#E5E5E5]">
@@ -51,6 +58,7 @@ export const Navbar = () => {
             </button>
 
             <div
+              ref={mobileMenuRef}
               className={`text-[13px] fixed bottom-0 left-0 h-full  p-1 bg-[#FBFBFB] border border-t-[#FBFBFB] border-l-[#FBFBFB] border-b-[#FBFBFB] border-r-[#E5E5E5] z-50 transition-transform duration-300 ease-in-out transform ${
                 isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
               }`}

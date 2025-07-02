@@ -28,17 +28,19 @@ export const createShop = async (payload: ShopPayload): Promise<Shop> => {
     formData.append("title", payload.title)
     formData.append("body", payload.body)
     formData.append("slug", payload.slug)
+    formData.append("banner", payload.banner)
 
-    if (payload.banner instanceof File) {
-      formData.append("banner", payload.banner, payload.banner.name)
-    } else {
-      console.warn(
-        "Expected File for banner, but got string. Skipping image upload."
-      )
-    }
+    const { data: shop } = await api.post("/api/dashboard/shop/", formData)
 
-    const { data } = await api.post("/api/dashboard/shop/", formData)
-    return data
+    await api.post(`/api/dashboard/shop/${shop.id}/add_map/`, {
+      name: payload.map.name,
+      address: payload.map.address,
+      latitude: payload.map.latitude,
+      longitude: payload.map.longitude,
+    })
+
+    const { data: fullShop } = await api.get(`/api/dashboard/shop/${shop.id}/`)
+    return fullShop
   } catch (error) {
     const parsed = parseAxiosError(error)
     throw new Error(parsed.message)

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import { Shop, ShopPayload, ShopUpdatePayload } from "@/types/shop"
-import AddShopForm from "@/components/shops/owner/AddShopForm"
+import ShopAddModal from "@/components/shops/owner/ShopAddModal"
 import ShopList from "@/components/shops/owner/ShopList"
 import {
   fetchShops,
@@ -61,11 +61,15 @@ const ShopsPage = () => {
   return (
     <main>
       <h1 className="title">Shops</h1>
-      <AddShopForm
+
+      {/* Add shop */}
+      <h2 className="subtitle-top">Add shop</h2>
+      <ShopAddModal
         onShopAdded={(shop) => setShops((prev) => [shop, ...prev])}
       />
-      <h2 className="subtitle">Shop list</h2>
 
+      {/* Edit/Delete shop */}
+      <h2 className="subtitle">Shop list</h2>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
