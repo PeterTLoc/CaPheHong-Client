@@ -2,29 +2,35 @@
 
 import { useParams, useRouter } from "next/navigation"
 import React, { useEffect, useState } from "react"
-import { MapPin } from "lucide-react"
+import { MapPin, Star, Info, AlignLeft } from "lucide-react"
 import dynamic from "next/dynamic"
 import { Shop } from "@/types/shop"
 import { fetchShopById } from "@/services/shopService"
-import { postComment } from "@/services/commentService"
 import { parseAxiosError } from "@/utils/apiErrors"
+import axios from "axios"
+import { useAuth } from "@/context/AuthContext"
+import { Review } from "@/types/shop"
+import ReviewForm from "@/components/shops/ReviewForm"
+import ReviewList from "@/components/shops/ReviewList"
 
 const Map = dynamic(() => import("@/components/shops/Map"), { ssr: false })
 
 const page = () => {
+  // Place all hooks at the top, unconditionally
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [shop, setShop] = useState<Shop | null>(null)
+  const [avgRating, setAvgRating] = useState<number | null>(null)
+  const [totalReviews, setTotalReviews] = useState<number | null>(null)
+  const [reviews, setReviews] = useState<Review[]>([])
+  const { user } = useAuth()
   const { shopId } = useParams()
   const router = useRouter()
 
-  const [shop, setShop] = useState<Shop | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [newComment, setNewComment] = useState("")
-  const [posting, setPosting] = useState(false)
-
+  // Fetch shop details
   useEffect(() => {
     const loadShop = async () => {
       if (!shopId) return
-
       try {
         const data = await fetchShopById(Number(shopId))
         setShop(data)
@@ -34,14 +40,59 @@ const page = () => {
         setLoading(false)
       }
     }
-
     loadShop()
+  }, [shopId])
+
+  // Fetch average rating
+  useEffect(() => {
+    const fetchAvg = async () => {
+      if (!shopId) return
+      try {
+        const token = localStorage.getItem("accessToken")
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/dashboard/shop/${shopId}/average_rating/`,
+          token ? { headers: { Authorization: `JWT ${token}` } } : {}
+        )
+        setAvgRating(res.data.average_rating)
+        setTotalReviews(res.data.total_reviews)
+      } catch {}
+    }
+    fetchAvg()
+  }, [shopId, shop])
+
+  // Fetch reviews on page load and when shopId changes
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!shopId) return
+      try {
+        const token = localStorage.getItem("accessToken")
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/dashboard/shop/${shopId}/reviews/`,
+          token ? { headers: { Authorization: `JWT ${token}` } } : {}
+        )
+        setReviews(res.data)
+        console.log("Fetched reviews:", res.data) // Debug log
+      } catch (err) {
+        // Optionally handle error
+      }
+    }
+    fetchReviews()
   }, [shopId])
 
   if (loading) return <div className="text-center py-10">Loading...</div>
   if (error)
     return <div className="text-center py-10 text-red-500">{error}</div>
   if (!shop) return <div className="text-center py-10">Shop not found.</div>
+
+  // Only display reviews in the feedback list
+  const getFeedbacks = () => {
+    return (reviews || [])
+      .map((r) => ({ ...r, type: "review" }))
+      .sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      )
+  }
 
   return (
     <div className="px-5">
@@ -61,28 +112,34 @@ const page = () => {
         <div className="flex flex-col gap-1">
           <div className="grid grid-cols-2 gap-1">
             <img
-              src={shop.banner}
+              // src={shop.banner}
+              src={
+                "https://plus.unsplash.com/premium_photo-1672987719865-b34bae00f8a4?q=80&w=1121&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              }
               alt={shop.title}
               className="w-full h-[300px] object-cover rounded-[5px]"
             />
 
-            <div className="container text-sm space-y-4">
+            {/* Shop info: single column label-value layout with icons */}
+            <div className="flex flex-col gap-5 bg-white rounded-[5px] p-6 shadow-sm">
               <div>
-                <h1 className="text-[22px] font-bold">{shop.title}</h1>
-                {shop.map && (
-                  <p className="text-[#616161] flex items-center gap-1">
-                    <MapPin size={16} strokeWidth={1} />
-                    {shop.map.address}
-                  </p>
-                )}
+                <div className="flex items-center gap-1 text-[#888] font-semibold text-xs mb-1">
+                  <MapPin size={14} className="inline-block" /> Address
+                </div>
+                <div className="text-sm">{shop.map?.address || "N/A"}</div>
               </div>
-              <p className="text-[#333]">{shop.body}</p>
+              <div>
+                <div className="flex items-center gap-1 text-[#888] font-semibold text-xs mb-1">
+                  <AlignLeft size={14} className="inline-block" /> Description
+                </div>
+                <div className="text-sm">{shop.body}</div>
+              </div>
             </div>
           </div>
 
           <div>
             <p className="subtitle">Map View</p>
-            <div className="container">
+            <div className="max-w-[1000px]">
               {shop.map ? (
                 <Map
                   destination={{
@@ -98,66 +155,58 @@ const page = () => {
             </div>
           </div>
 
-          <h2 className="subtitle">Reviews & Comments</h2>
-          <div className="container space-y-4">
-            {shop.comments.length === 0 ? (
-              <p className="text-sm text-gray-500">No comments yet.</p>
-            ) : (
-              <ul className="space-y-2">
-                {shop.comments.map((comment) => (
-                  <li
-                    key={comment.id}
-                    className="border border-gray-200 rounded-lg p-3 bg-gray-50"
-                  >
-                    <div className="text-sm font-semibold">
-                      {comment.author}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {new Date(comment.created_at).toLocaleString()}
-                    </div>
-                    <p className="text-sm mt-1">{comment.content}</p>
-                  </li>
-                ))}
-              </ul>
-            )}
+          <h2 className="subtitle">Reviews</h2>
 
-            {/* Always show the form below */}
-            <div className="space-y-2 mt-4">
-              <textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Write your comment..."
-                className="w-full border rounded-lg p-2 text-sm"
-                rows={3}
-              />
+          <div className="container max-w-[1000px]">
+            {/* Review form (only for logged-in users) */}
+            <ReviewForm
+              shopId={shop?.id}
+              onReviewSubmitted={() => {
+                // Refetch reviews and average rating after submission
+                const fetchReviews = async () => {
+                  if (!shop?.id) return
+                  const token = localStorage.getItem("accessToken")
+                  const res = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/dashboard/shop/${shop.id}/reviews/`,
+                    token ? { headers: { Authorization: `JWT ${token}` } } : {}
+                  )
+                  setReviews(res.data)
+                }
+                const fetchAvg = async () => {
+                  if (!shop?.id) return
+                  const token = localStorage.getItem("accessToken")
+                  const res = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/dashboard/shop/${shop.id}/average_rating/`,
+                    token ? { headers: { Authorization: `JWT ${token}` } } : {}
+                  )
+                  setAvgRating(res.data.average_rating)
+                  setTotalReviews(res.data.total_reviews)
+                }
+                fetchReviews()
+                fetchAvg()
+              }}
+              user={user}
+            />
+          </div>
 
-              <button
-                onClick={async () => {
-                  if (!newComment.trim()) return
-                  if (!shop) return
-
-                  try {
-                    setPosting(true)
-                    const newCmt = await postComment(shop.id, newComment)
-
-                    setShop({
-                      ...shop,
-                      comments: [...shop.comments, newCmt],
-                    })
-                    setNewComment("")
-                  } catch (error) {
-                    const parsed = parseAxiosError(error)
-                    console.error("Post comment failed:", parsed.message)
-                  } finally {
-                    setPosting(false)
-                  }
-                }}
-                disabled={posting}
-                className="px-3 py-1 text-sm bg-[#6F4E37] text-white rounded hover:opacity-80 disabled:opacity-50"
-              >
-                {posting ? "Posting..." : "Post Comment"}
-              </button>
+          {/* Review list */}
+          <div className="container max-w-[1000px]">
+            {/* Average rating display (unchanged) */}
+            <div className="flex items-center gap-2 mb-2">
+              <span className="font-semibold">Average Rating:</span>
+              {avgRating !== null ? (
+                <span className="flex items-center gap-1">
+                  {avgRating}{" "}
+                  <Star size={16} className="text-yellow-400 fill-yellow-400" />
+                  <span className="text-xs text-gray-500">
+                    ({totalReviews} reviews)
+                  </span>
+                </span>
+              ) : (
+                <span className="text-xs text-gray-500">No reviews yet.</span>
+              )}
             </div>
+            <ReviewList reviews={reviews} />
           </div>
         </div>
       </div>

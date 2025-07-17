@@ -38,7 +38,7 @@ body {
 }
 
 .button-brown {
-  @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] text-white bg-[#6F4E37] hover:opacity-75;
+  @apply min-w-[130px] min-h-[32px] px-3 pt-[5px] pb-[3px] rounded-[5px] text-[13px] text-white bg-[#6F4E37] hover:opacity-75;
 }
 
 .button-red {
@@ -59,6 +59,14 @@ body {
 
 .container {
   @apply bg-[#FBFBFB] border border-[#E5E5E5] p-5 rounded-[5px]
+}
+
+.container-top {
+  @apply bg-[#FBFBFB] border border-[#E5E5E5] p-5 rounded-t-[5px]
+}
+
+.container-bottom {
+  @apply bg-[#FBFBFB] border border-[#E5E5E5] p-5 rounded-b-[5px]
 }
 
 .container-no-padding {

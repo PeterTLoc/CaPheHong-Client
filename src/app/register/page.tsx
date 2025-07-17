@@ -23,7 +23,7 @@ const page = () => {
   const [serverError, setServerError] = useState("")
 
   const router = useRouter()
-  const { register } = useAuth()
+  const { register, login } = useAuth()
 
   const options = [
     { value: "guest", label: "Guest" },
@@ -51,6 +51,7 @@ const page = () => {
 
     try {
       await register(form)
+      await login({ email: form.email, password: form.password })
 
       router.push("/")
     } catch (error: unknown) {

@@ -30,13 +30,16 @@ export const loginUser = async (
 }
 
 export const registerUser = async (formData: RegisterForm): Promise<User> => {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/users/`
   try {
+    console.log("Registering user at:", url, "with data:", formData)
     const { data } = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/users/`,
+      url,
       formData
     )
     return data
   } catch (error) {
+    console.error("Registration error for URL:", url, error)
     const parsed = parseAxiosError(error)
     throw new Error(parsed.message)
   }

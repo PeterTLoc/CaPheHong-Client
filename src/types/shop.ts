@@ -14,6 +14,7 @@ export interface Shop {
   } | null
   tags: { id: number; name: string }[]
   comments: any[]
+  reviews: Review[]
 }
 
 export interface ShopPayload {
@@ -34,4 +35,16 @@ export interface ShopUpdatePayload {
   body?: string
   slug?: string
   banner?: File | string
+}
+
+// Add Review type definition
+export interface Review {
+  id: number
+  post: number
+  rating: number
+  title: string
+  content: string
+  created_at: string
+  updated_at: string
+  author: string
 }
