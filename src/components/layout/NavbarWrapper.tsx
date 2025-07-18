@@ -15,7 +15,9 @@ const NavbarWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       {!hideNav && <Navbar />}
-      {children}
+      <div className={!hideNav ? "pt-[84px]" : ""}>
+        {children}
+      </div>
     </>
   )
 }

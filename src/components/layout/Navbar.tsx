@@ -46,7 +46,7 @@ export const Navbar = () => {
   }, [isProfileDropdownOpen, isMobileMenuOpen])
 
   return (
-    <nav className="sticky top-0 z-50 h-[84px] bg-[#FBFBFB] border-b border-b-[#E5E5E5]">
+    <nav className="fixed top-0 left-0 w-full z-50 h-[84px] bg-[#FBFBFB] border-b border-b-[#E5E5E5]">
       <div className="flex justify-between items-center h-full px-4 sm:px-8 lg:px-9">
         <div className="flex gap-4 items-center">
           <div className="relative lg:hidden">

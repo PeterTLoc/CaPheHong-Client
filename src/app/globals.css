@@ -74,15 +74,15 @@ body {
 }
 
 .sidebar-link {
-  @apply h-9 hover:bg-[#EAEAEA] rounded-[5px] px-[10px] text-[13px]
+  @apply h-9 hover:bg-[#EAEAEA] rounded-[5px] px-[10px]
 }
 
 .sidebar-link-text {
-  @apply mt-1
+  @apply mt-1 text-[13px]
 }
 
 .subtext {
-  @apply text-[#5F5F5F]
+  @apply text-[#8B8B8B]
 }
 
 .section {

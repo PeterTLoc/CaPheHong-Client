@@ -12,6 +12,7 @@ import { useAuth } from "@/context/AuthContext"
 import { Review } from "@/types/shop"
 import ReviewForm from "@/components/shops/ReviewForm"
 import ReviewList from "@/components/shops/ReviewList"
+import ShopOverview from "@/components/shops/ShopOverview"
 
 const Map = dynamic(() => import("@/components/shops/Map"), { ssr: false })
 
@@ -94,10 +95,12 @@ const page = () => {
       )
   }
 
+  const fallbackImage = "https://plus.unsplash.com/premium_photo-1672987719865-b34bae00f8a4?q=80&w=1121&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+
   return (
     <div className="px-5">
       <div className="max-w-[1000px] mx-auto">
-        <div className="title">
+        <div id="overview" className="title">
           <span
             onClick={() => router.push("/shops")}
             className="text-[#5F5F5F] hover:cursor-pointer hover:text-black"
@@ -110,31 +113,16 @@ const page = () => {
 
         {/* contents */}
         <div className="flex flex-col gap-1">
-          <div className="grid grid-cols-2 gap-1">
-            <img
-              // src={shop.banner}
-              src={
-                "https://plus.unsplash.com/premium_photo-1672987719865-b34bae00f8a4?q=80&w=1121&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              }
+          <div className="flex flex-col gap-2">
+            <ShopOverview
+              // src={shop.banner || fallbackImage}
+              src={fallbackImage}
               alt={shop.title}
-              className="w-full h-[300px] object-cover rounded-[5px]"
+              avgRating={avgRating}
+              totalReviews={totalReviews}
+              address={shop.map?.address}
+              description={shop.body}
             />
-
-            {/* Shop info: single column label-value layout with icons */}
-            <div className="flex flex-col gap-5 bg-white rounded-[5px] p-6 shadow-sm">
-              <div>
-                <div className="flex items-center gap-1 text-[#888] font-semibold text-xs mb-1">
-                  <MapPin size={14} className="inline-block" /> Address
-                </div>
-                <div className="text-sm">{shop.map?.address || "N/A"}</div>
-              </div>
-              <div>
-                <div className="flex items-center gap-1 text-[#888] font-semibold text-xs mb-1">
-                  <AlignLeft size={14} className="inline-block" /> Description
-                </div>
-                <div className="text-sm">{shop.body}</div>
-              </div>
-            </div>
           </div>
 
           <div>
