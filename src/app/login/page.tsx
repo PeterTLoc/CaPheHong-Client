@@ -7,6 +7,7 @@ import { validateLoginForm } from "@/utils/authValidation"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
+import { Loader2, Home } from "lucide-react"
 
 const initialLoginFormData: LoginForm = {
   email: "",
@@ -54,12 +55,30 @@ const page = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div 
+      className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: "url('/images/backgroundloginregister.png')"
+      }}
+    >
+      {/* Overlay for better readability */}
+      <div className="absolute inset-0 bg-black/20"></div>
+      
       <form
-        className="flex flex-col bg-[#FBFBFB] p-5 border border-[#E5E5E5] rounded-md"
+        className="flex flex-col bg-[#FBFBFB] p-5 border border-[#E5E5E5] rounded-md relative z-10 shadow-lg"
         onSubmit={handleSubmit}
       >
-        <h1 className="text-[26px] font-bold self-center mb-6">Sign in</h1>
+        <div className="text-xs flex items-center justify-start mb-4">
+          <Link
+            className="text-[#5F5F5F] hover:text-black hover:underline flex items-center gap-1"
+            href="/"
+          >
+            <Home className="w-3 h-3" />
+            Back to Home
+          </Link>
+        </div>
+
+        <h1 className="text-[26px] font-bold mb-6 text-center">Sign in</h1>
 
         <div className="mb-4">
           <input
@@ -107,16 +126,21 @@ const page = () => {
         </div>
 
         <button
-          className="text-white w-full min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#6F4E37] hover:opacity-75"
+          disabled={isLoading}
+          className={`text-white w-full min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] flex items-center justify-center gap-2 ${
+            isLoading 
+              ? "bg-[#BFBFBF] cursor-not-allowed" 
+              : "bg-[#6F4E37] hover:opacity-75"
+          }`}
           type="submit"
-          
         >
+          {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
           {isLoading ? "Logging in..." : "Login"}
         </button>
       </form>
 
       {serverError && (
-        <p className="mt-2 text-red-500 text-xs mx-auto w-[280px] text-center">
+        <p className="mt-2 text-red-500 text-xs mx-auto w-[280px] text-center relative z-10">
           {serverError}
         </p>
       )}

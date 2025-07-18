@@ -2,12 +2,14 @@
 
 import React, { useEffect, useRef, useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { CircleUserRound, Crown, LogOut, Menu, Search } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 
 export const Navbar = () => {
   const pathname = usePathname()
+  const router = useRouter()
   const { user, loading, logout } = useAuth()
   const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false)
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -19,6 +21,11 @@ export const Navbar = () => {
     { href: "/shops", label: "Shops" },
     { href: "/posts", label: "Posts" },
   ]
+
+  const handleMobileNavClick = (href: string) => {
+    setMobileMenuOpen(false)
+    router.push(href)
+  }
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -66,17 +73,17 @@ export const Navbar = () => {
             >
               <div className="flex flex-col">
                 {links.map(({ href, label }) => (
-                  <Link
+                  <button
                     key={href}
-                    href={href}
-                    className={`rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA] ${
+                    onClick={() => handleMobileNavClick(href)}
+                    className={`rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA] text-left ${
                       pathname === href
                         ? "text-[#6F4E37] font-semibold underline"
                         : ""
                     }`}
                   >
                     {label}
-                  </Link>
+                  </button>
                 ))}
               </div>
             </div>

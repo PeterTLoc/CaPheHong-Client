@@ -14,6 +14,7 @@ type CustomDropdownProps = {
   onChange: (value: string) => void
   placeholder?: string
   className?: string
+  onOpen?: (e: React.MouseEvent) => void
 }
 
 const CustomDropdown: React.FC<CustomDropdownProps> = ({
@@ -22,6 +23,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
   onChange,
   placeholder = "Choose item",
   className = "",
+  onOpen,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -43,10 +45,20 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  const handleToggle = (e: React.MouseEvent) => {
+    const newIsOpen = !isOpen
+    setIsOpen(newIsOpen)
+    
+    // Call onOpen when opening the dropdown
+    if (newIsOpen && onOpen) {
+      onOpen(e)
+    }
+  }
+
   return (
     <div className={`relative min-w-[280px] ${className}`} ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={handleToggle}
         className="w-full min-h-[32px] pt-[5px] pb-[3px] px-3 rounded-[5px] text-[13px] bg-[#FBFBFB] border border-b-[#868686] border-t-[#E5E5E5] border-l-[#E5E5E5] border-r-[#E5E5E5] flex items-center justify-between focus:outline-none"
       >
         <span className={value ? "text-black" : "text-gray-400"}>
