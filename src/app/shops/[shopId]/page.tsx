@@ -24,6 +24,7 @@ const page = () => {
   const [avgRating, setAvgRating] = useState<number | null>(null)
   const [totalReviews, setTotalReviews] = useState<number | null>(null)
   const [reviews, setReviews] = useState<Review[]>([])
+  const [showReviewModal, setShowReviewModal] = useState(false)
   const { user } = useAuth()
   const { shopId } = useParams()
   const router = useRouter()
@@ -95,61 +96,119 @@ const page = () => {
       )
   }
 
-  const fallbackImage = "https://plus.unsplash.com/premium_photo-1672987719865-b34bae00f8a4?q=80&w=1121&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  const fallbackImage =
+    "https://plus.unsplash.com/premium_photo-1672987719865-b34bae00f8a4?q=80&w=1121&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
 
   return (
-    <div className="px-5">
-      <div className="max-w-[1000px] mx-auto">
-        <div id="overview" className="title">
-          <span
-            onClick={() => router.push("/shops")}
-            className="text-[#5F5F5F] hover:cursor-pointer hover:text-black"
-          >
-            Shops
-          </span>
-          <span className="mx-4">›</span>
-          <span>{shop.title}</span>
+    <div className="max-w-[1000px] mx-auto">
+      <div id="overview" className="title">
+        <span
+          onClick={() => router.push("/shops")}
+          className="text-[#5F5F5F] hover:cursor-pointer hover:text-black"
+        >
+          Shops
+        </span>
+        <span className="mx-4">›</span>
+        <span id="overview-title">{shop.title}</span>
+      </div>
+
+      {/* contents */}
+      <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-2">
+          <ShopOverview
+            src={shop.banner || fallbackImage}
+            // src={fallbackImage}
+            alt={shop.title}
+            avgRating={avgRating}
+            totalReviews={totalReviews}
+            address={shop.map?.address}
+            description={shop.body}
+          />
         </div>
 
-        {/* contents */}
-        <div className="flex flex-col gap-1">
-          <div className="flex flex-col gap-2">
-            <ShopOverview
-              // src={shop.banner || fallbackImage}
-              src={fallbackImage}
-              alt={shop.title}
-              avgRating={avgRating}
-              totalReviews={totalReviews}
-              address={shop.map?.address}
-              description={shop.body}
-            />
-          </div>
-
+        <div id="map">
+          <p id="map-subtitle" className="subtitle">
+            Map View
+          </p>
           <div>
-            <p className="subtitle">Map View</p>
-            <div className="max-w-[1000px]">
-              {shop.map ? (
-                <Map
-                  destination={{
-                    lat: shop.map.latitude,
-                    lng: shop.map.longitude,
-                  }}
-                />
+            {shop.map ? (
+              <Map
+                destination={{
+                  lat: shop.map.latitude,
+                  lng: shop.map.longitude,
+                }}
+              />
+            ) : (
+              <p className="text-sm text-gray-500">
+                No location data available for this shop.
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div id="reviews">
+          <h2 id="reviews-subtitle" className="subtitle">
+            Reviews
+          </h2>
+
+          {/* Review list */}
+          <div className="container">
+            {/* Header with Add Review button */}
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold">Average Rating:</span>
+                {avgRating !== null ? (
+                  <span className="flex items-center gap-1">
+                    {avgRating}{" "}
+                    <Star size={16} className="text-yellow-400 fill-yellow-400" />
+                    <span className="text-xs text-gray-500">
+                      ({totalReviews} reviews)
+                    </span>
+                  </span>
+                ) : (
+                  <span className="text-xs text-gray-500">No reviews yet.</span>
+                )}
+              </div>
+              {user ? (
+                <button 
+                  onClick={() => setShowReviewModal(true)}
+                  className="button-brown"
+                >
+                  Add Review
+                </button>
               ) : (
-                <p className="text-sm text-gray-500">
-                  No location data available for this shop.
-                </p>
+                <button 
+                  onClick={() => router.push('/login')}
+                  className="button-brown"
+                >
+                  Add Review
+                </button>
               )}
             </div>
+            
+            <ReviewList reviews={reviews} />
           </div>
+        </div>
+      </div>
 
-          <h2 className="subtitle">Reviews</h2>
-
-          <div className="container max-w-[1000px]">
-            {/* Review form (only for logged-in users) */}
+      {/* Review Modal */}
+      {showReviewModal && (
+        <div className="fixed inset-0 bg-black/5 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-[5px] p-5 w-full max-w-md mx-4 shadow-lg">
+            <div className="flex justify-between items-center mb-[10px]">
+              <h2 className="text-xl font-bold">Write a Review</h2>
+              <button 
+                onClick={() => setShowReviewModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            
             <ReviewForm
               shopId={shop?.id}
               onReviewSubmitted={() => {
+                setShowReviewModal(false)
                 // Refetch reviews and average rating after submission
                 const fetchReviews = async () => {
                   if (!shop?.id) return
@@ -176,28 +235,8 @@ const page = () => {
               user={user}
             />
           </div>
-
-          {/* Review list */}
-          <div className="container max-w-[1000px]">
-            {/* Average rating display (unchanged) */}
-            <div className="flex items-center gap-2 mb-2">
-              <span className="font-semibold">Average Rating:</span>
-              {avgRating !== null ? (
-                <span className="flex items-center gap-1">
-                  {avgRating}{" "}
-                  <Star size={16} className="text-yellow-400 fill-yellow-400" />
-                  <span className="text-xs text-gray-500">
-                    ({totalReviews} reviews)
-                  </span>
-                </span>
-              ) : (
-                <span className="text-xs text-gray-500">No reviews yet.</span>
-              )}
-            </div>
-            <ReviewList reviews={reviews} />
-          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

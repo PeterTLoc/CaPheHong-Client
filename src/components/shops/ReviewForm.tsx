@@ -70,43 +70,43 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   if (!user) return null
 
   return (
-    <div className="">
-      <div className="flex items-center gap-3 mb-3">
-        <span className="text-sm font-semibold">Your Rating</span>
-        <div className="flex items-center gap-1">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <Star
-              key={star}
-              size={20}
-              className={`cursor-pointer ${
-                (hoverRating || rating) >= star
-                  ? "text-yellow-400 fill-yellow-400"
-                  : "text-gray-300"
-              }`}
-              onMouseEnter={() => setHoverRating(star)}
-              onMouseLeave={() => setHoverRating(0)}
-              onClick={() => setRating(star)}
-            />
-          ))}
-        </div>
+    <div>
+      <div className="flex items-center gap-1 mb-5">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            size={20}
+            className={`cursor-pointer ${
+              (hoverRating || rating) >= star
+                ? "text-yellow-400 fill-yellow-400"
+                : "text-gray-300"
+            }`}
+            onMouseEnter={() => setHoverRating(star)}
+            onMouseLeave={() => setHoverRating(0)}
+            onClick={() => setRating(star)}
+          />
+        ))}
       </div>
 
+      <span className="subtitle">Description</span>
       <textarea
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         placeholder="Write your review..."
-        className="text-sm w-full border border-[#E5E5E5] rounded-[5px] p-5 focus:border-[#6F4E37] focus:border focus:outline-none"
+        className="text-sm w-full border border-[#E5E5E5] rounded-[5px] p-5 focus:border-[#6F4E37] focus:border focus:outline-none mb-5"
         rows={3}
       />
 
-      <button
-        onClick={handleSubmit}
-        disabled={posting}
-        className="button-brown"
-      >
-        {posting ? "Submitting..." : "Submit Review"}
-      </button>
-      {error && <p className="text-red-500 text-xs">{error}</p>}
+      <div className="flex justify-end">
+        <button
+          onClick={handleSubmit}
+          disabled={posting}
+          className="button-brown"
+        >
+          {posting ? "Submitting..." : "Submit"}
+        </button>
+      </div>
+      {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
     </div>
   )
 }
