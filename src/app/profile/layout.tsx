@@ -9,11 +9,13 @@ export default function ProfileLayout({
 }) {
   return (
     <RequireAuth>
-      <div className="flex min-h-screen">
+      <div className="flex">
         <Sidebar />
 
-        <div className="flex flex-1 justify-center px-5">
-          <main className="w-full max-w-[1000px]">{children}</main>
+        <div className="px-5 w-full">
+          <div className="mx-auto max-w-[1000px] w-full">
+            <main>{children}</main>
+          </div>
         </div>
       </div>
     </RequireAuth>

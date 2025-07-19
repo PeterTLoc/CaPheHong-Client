@@ -40,7 +40,7 @@ const Page = () => {
 
   // Dynamically get all unique tags from the shop data
   const allTags = Array.from(
-    new Set(shops.flatMap((shop) => shop.tags.map((tag) => tag.name)))
+    new Set((Array.isArray(shops) ? shops : []).flatMap((shop) => shop.tags.map((tag) => tag.name)))
   )
 
   // Filter shops based on activeTags (multi-filter, match any)

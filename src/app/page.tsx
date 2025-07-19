@@ -9,8 +9,9 @@ export default function Home() {
     <div className="relative">
       {/* Parallax Background */}
       <div 
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat bg-fixed"
+        className="fixed top-[84px] inset-0 bg-cover bg-center bg-no-repeat bg-fixed"
         style={{
+          height: "calc(100vh - 84px)",
           backgroundImage: "url('/images/cover.jpeg')",
           transform: "translateZ(0)",
         }}

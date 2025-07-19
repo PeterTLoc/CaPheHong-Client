@@ -38,11 +38,13 @@ const CheckoutClient = ({
   price,
   user,
   closeModal,
+  type,
 }: {
   plan: string
   price: string
   user: any
   closeModal: () => void
+  type: string
 }) => {
   const handleCheckout = async (methodId: string, methodName: string) => {
     try {
@@ -86,6 +88,10 @@ const CheckoutClient = ({
             <div className="flex justify-between ">
               <span className="font-medium">Price</span>
               <span>{price}</span>
+            </div>
+            <div className="flex justify-between ">
+              <span className="font-medium">Type</span>
+              <span>{type}</span>
             </div>
           </div>
         </div>

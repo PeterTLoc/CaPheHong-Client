@@ -18,24 +18,15 @@ const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
   const accountType = user.role === "owner" ? "Owner account" : "User account"
 
   return (
-    <div className="w-[280px] px-5 pt-[19px]">
+    <div className="px-5 pt-[19px]">
       <nav className="flex flex-col gap-1">
-        <div className="rounded-[5px] pb-[17px] flex items-center gap-[10px]">
-          <CircleUserRound strokeWidth={0.5} size={60} />
-          <div>
-            <p className="text-[13px] font-semibold">{user.name}</p>
-            <p className="text-[11px]">{accountType}</p>
-          </div>
-        </div>
-
         {children}
-
         <button
           onClick={logout}
-          className="sidebar-link flex items-center gap-[10px] text-red-500"
+          className="sidebar-link flex items-center gap-[14px] text-red-500 cursor-pointer"
         >
           <LogOut size={20} strokeWidth={1} />
-          <div>Logout</div>
+          <div className="sidebar-link-text">Logout</div>
         </button>
       </nav>
     </div>

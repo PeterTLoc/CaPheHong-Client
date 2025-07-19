@@ -3,6 +3,9 @@ export interface User {
   email: string
   role: string
   name: string
+  avatar?: string
+  is_premium?: boolean
+  created_at?: string
 }
 
 export interface LoginForm {
@@ -43,6 +46,7 @@ export interface AuthContextType {
     role: string
   }) => Promise<User>
   logout: () => void
+  updateProfile: (fields: Partial<User>) => Promise<User>
 }
 
 export interface ResetPasswordFormErrors {

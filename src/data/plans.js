@@ -4,16 +4,17 @@ export const plans = {
       name: "Basic Plan",
       price: "₫30,000/tháng",
       description: [
-        "Quản lý cửa hàng cơ bản",
-        "Báo cáo doanh thu hàng tháng",
-        "Hỗ trợ khách hàng 24/7",
+        "Đổi ảnh cá nhân",
+        "Huy hiệu",
+        "Được review nhiều lần",
+        "Thêm cửa hàng yêu thích",
       ],
     },
   ],
   Business: [
     {
       name: "Basic Plan",
-      price: "₫30,000/tháng",
+      price: "₫300,000/tháng",
       description: [
         "Quản lý nhiều chi nhánh",
         "Báo cáo nâng cao cho doanh nghiệp",
@@ -21,4 +22,4 @@ export const plans = {
       ],
     },
   ],
-};
+}

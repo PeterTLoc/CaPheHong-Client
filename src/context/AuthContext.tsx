@@ -10,7 +10,7 @@ import {
   useMemo,
   useState,
 } from "react"
-import { loginUser, registerUser, fetchUser } from "@/services/authService"
+import { loginUser, registerUser, fetchUser, updateProfile as updateProfileApi } from "@/services/authService"
 import { useRouter } from "next/navigation"
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -68,6 +68,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     router.push("/login")
   }, [])
 
+  const updateProfile = useCallback(
+    async (fields: Partial<User> | FormData) => {
+      await updateProfileApi(fields)
+      const currentUser = await fetchUser()
+      setUser(currentUser)
+      return currentUser
+    },
+    []
+  )
+
   useEffect(() => {
     const initialize = async () => {
       const token = localStorage.getItem("accessToken")
@@ -96,8 +106,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       login,
       register,
       logout,
+      updateProfile,
     }),
-    [user, loading, login, register, logout]
+    [user, loading, login, register, logout, updateProfile]
   )
 
   return (

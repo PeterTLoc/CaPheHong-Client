@@ -143,8 +143,15 @@ export const Navbar = () => {
                 onClick={() => setProfileDropdownOpen((prev) => !prev)}
                 className="flex items-center cursor-pointer"
               >
-                {/* Replace with <Image /> or actual image URL */}
-                <CircleUserRound strokeWidth={0.75} size={32} />
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt="Avatar"
+                    className="w-8 h-8 rounded-full object-cover border border-[#E5E5E5] bg-white"
+                  />
+                ) : (
+                  <CircleUserRound strokeWidth={0.75} size={32} />
+                )}
               </button>
 
               <AnimatePresence>
@@ -174,19 +181,27 @@ export const Navbar = () => {
                       onClick={() => setProfileDropdownOpen(false)}
                       className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
                     >
-                      <CircleUserRound strokeWidth={1} size={20} />
+                      {user.avatar ? (
+                        <img
+                          src={user.avatar}
+                          alt="Avatar"
+                          className="w-5 h-5 rounded-full object-cover border border-[#E5E5E5] bg-white"
+                        />
+                      ) : (
+                        <CircleUserRound strokeWidth={1} size={20} />
+                      )}
                       <span className="pt-[10px] pb-[6px]">
                         {user?.role === "guest" ? "Profile" : "Dashboard"}
                       </span>
                     </Link>
 
                     <Link
-                      href="/upgrade-plan"
+                      href="/profile/upgrade-plan"
                       onClick={() => setProfileDropdownOpen(false)}
                       className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
                     >
                       <Crown strokeWidth={1} size={20} />
-                      <div className="pt-[10px] pb-[6px]">Upgrade plan</div>
+                      <div className="pt-[10px] pb-[6px]">Upgrade Plans</div>
                     </Link>
 
                     <button

@@ -69,6 +69,28 @@ export const fetchUser = async (): Promise<User> => {
   }
 }
 
+export const updateProfile = async (fields: Partial<User> | FormData): Promise<User> => {
+  const accessToken = localStorage.getItem("accessToken")
+  if (!accessToken) throw new Error("Not authenticated")
+  try {
+    const { data } = await axios.patch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/users/me/`,
+      fields,
+      {
+        headers: {
+          Authorization: `JWT ${accessToken}`,
+          ...(fields instanceof FormData ? { "Content-Type": "multipart/form-data" } : {}),
+        },
+      }
+    )
+    // Optionally update user in localStorage or refetch user
+    return data
+  } catch (error) {
+    const parsed = parseAxiosError(error)
+    throw new Error(parsed.message)
+  }
+}
+
 export const refreshToken = async (refreshToken: string): Promise<string> => {
   try {
     const { data } = await api.post("/api/auth/jwt/refresh/", {
