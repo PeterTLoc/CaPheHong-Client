@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react"
 import { ChevronDown } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 
 type Option = {
   value: string
@@ -48,7 +49,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
   const handleToggle = (e: React.MouseEvent) => {
     const newIsOpen = !isOpen
     setIsOpen(newIsOpen)
-    
+
     // Call onOpen when opening the dropdown
     if (newIsOpen && onOpen) {
       onOpen(e)
@@ -72,24 +73,46 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
         />
       </button>
 
-      {isOpen && (
-        <ul className="absolute z-10 w-full max-h-60 overflow-auto bg-white border border-gray-200 rounded-md shadow-lg text-[13px]">
-          {options.map((option) => (
-            <li
-              key={option.value}
-              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
-                option.value === value ? "bg-gray-100 font-medium" : ""
-              }`}
-              onClick={() => {
-                onChange(option.value)
-                setIsOpen(false)
-              }}
-            >
-              {option.label}
-            </li>
-          ))}
-        </ul>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{
+              y: -4,
+              opacity: 0.8,
+            }}
+            animate={{
+              y: 0,
+              opacity: 1,
+            }}
+            exit={{
+              y: -4,
+              opacity: 0.8,
+            }}
+            transition={{
+              duration: 0.15,
+              ease: "easeOut",
+            }}
+            className="absolute z-10 w-full top-full"
+          >
+            <ul className="bg-white border border-gray-200 rounded-md shadow-lg text-[13px] max-h-60 overflow-auto">
+              {options.map((option) => (
+                <li
+                  key={option.value}
+                  className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+                    option.value === value ? "bg-gray-100 font-medium" : ""
+                  }`}
+                  onClick={() => {
+                    onChange(option.value)
+                    setIsOpen(false)
+                  }}
+                >
+                  {option.label}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

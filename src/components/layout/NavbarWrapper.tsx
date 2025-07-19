@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation"
 import React from "react"
 import { Navbar } from "./Navbar"
+import { Footer } from "@/components/home/Footer"
 
 const NavbarWrapper = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()
@@ -13,12 +14,13 @@ const NavbarWrapper = ({ children }: { children: React.ReactNode }) => {
     pathname.startsWith("/password-reset/")
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       {!hideNav && <Navbar />}
-      <div className={!hideNav ? "pt-[84px]" : ""}>
+      <div className={`flex-1 ${!hideNav ? "pt-[84px]" : ""}`}>
         {children}
       </div>
-    </>
+      {!hideNav && <Footer />}
+    </div>
   )
 }
 

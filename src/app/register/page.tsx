@@ -23,6 +23,7 @@ const page = () => {
   const [errors, setErrors] = useState<RegisterFormErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
+  const [isDropdownActive, setIsDropdownActive] = useState(false)
 
   const router = useRouter()
   const { register, login } = useAuth()
@@ -56,13 +57,31 @@ const page = () => {
     e.preventDefault()
     e.stopPropagation()
     
+    setIsDropdownActive(true)
+    
     // Clear role error when dropdown is opened
     setErrors((prev) => ({ ...prev, role: undefined }))
+  }
+
+  const handleRoleChangeWithPrevention = (value: string) => {
+    // Prevent any form validation from being triggered
+    setForm((prev) => ({ ...prev, role: value }))
+    
+    // Clear role error when a valid option is selected
+    setErrors((prev) => ({ ...prev, role: undefined }))
+    
+    // Reset dropdown active state
+    setIsDropdownActive(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setServerError("")
+
+    // Don't validate if dropdown is active
+    if (isDropdownActive) {
+      return
+    }
 
     const validationErrors = validateRegisterForm(form)
 
@@ -176,7 +195,7 @@ const page = () => {
           <CustomDropdown
             options={options}
             value={form.role}
-            onChange={handleRoleChange}
+            onChange={handleRoleChangeWithPrevention}
             placeholder="Choose role"
             onOpen={handleDropdownOpen}
           />

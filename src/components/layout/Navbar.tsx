@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { CircleUserRound, Crown, LogOut, Menu, Search } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
+import { motion, AnimatePresence } from "framer-motion"
 
 export const Navbar = () => {
   const pathname = usePathname()
@@ -58,7 +59,7 @@ export const Navbar = () => {
         <div className="flex gap-4 items-center">
           <div className="relative lg:hidden">
             <button
-              className="flex items-center"
+              className="flex items-center cursor-pointer"
               onClick={() => setMobileMenuOpen((prev) => !prev)}
             >
               <Menu />
@@ -76,7 +77,7 @@ export const Navbar = () => {
                   <button
                     key={href}
                     onClick={() => handleMobileNavClick(href)}
-                    className={`rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA] text-left ${
+                    className={`rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA] text-left cursor-pointer ${
                       pathname === href
                         ? "text-[#6F4E37] font-semibold underline"
                         : ""
@@ -90,7 +91,7 @@ export const Navbar = () => {
           </div>
 
           <div className="pr-7">
-            <Link href="/" className="flex items-center">
+            <Link href="/" className="flex items-center cursor-pointer">
               <img
                 src="/images/logoCaPhe.png"
                 alt="Ca Phe Hong Logo"
@@ -122,7 +123,7 @@ export const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <button className="lg:hidden">
+          <button className="lg:hidden cursor-pointer">
             <Search strokeWidth={1} />
           </button>
 
@@ -140,46 +141,64 @@ export const Navbar = () => {
             <div className="relative">
               <button
                 onClick={() => setProfileDropdownOpen((prev) => !prev)}
-                className="flex items-center"
+                className="flex items-center cursor-pointer"
               >
                 {/* Replace with <Image /> or actual image URL */}
                 <CircleUserRound strokeWidth={0.75} size={32} />
               </button>
 
-              {isProfileDropdownOpen && (
-                <div
-                  ref={profileDropdownRef}
-                  className="text-[13px] absolute right-0 mt-2 p-1 bg-[#FBFBFB] border border-[#E5E5E5] rounded-[5px] shadow-lg z-50"
-                >
-                  <Link
-                    href={user?.role === "guest" ? "/profile" : "/dashboard"}
-                    onClick={() => setProfileDropdownOpen(false)}
-                    className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
+              <AnimatePresence>
+                {isProfileDropdownOpen && (
+                  <motion.div
+                    ref={profileDropdownRef}
+                    initial={{
+                      y: -4,
+                      opacity: 0.8,
+                    }}
+                    animate={{
+                      y: 0,
+                      opacity: 1,
+                    }}
+                    exit={{
+                      y: -4,
+                      opacity: 0.8,
+                    }}
+                    transition={{
+                      duration: 0.15,
+                      ease: "easeOut",
+                    }}
+                    className="text-[13px] absolute right-0 mt-2 p-1 bg-[#FBFBFB] border border-[#E5E5E5] rounded-[5px] shadow-lg z-50"
                   >
-                    <CircleUserRound strokeWidth={1} size={20} />
-                    <span className="pt-[10px] pb-[6px]">
-                      {user?.role === "guest" ? "Profile" : "Dashboard"}
-                    </span>
-                  </Link>
+                    <Link
+                      href={user?.role === "guest" ? "/profile" : "/dashboard"}
+                      onClick={() => setProfileDropdownOpen(false)}
+                      className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
+                    >
+                      <CircleUserRound strokeWidth={1} size={20} />
+                      <span className="pt-[10px] pb-[6px]">
+                        {user?.role === "guest" ? "Profile" : "Dashboard"}
+                      </span>
+                    </Link>
 
-                  <Link
-                    href="/upgrade-plan"
-                    onClick={() => setProfileDropdownOpen(false)}
-                    className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
-                  >
-                    <Crown strokeWidth={1} size={20} />
-                    <div className="pt-[10px] pb-[6px]">Upgrade plan</div>
-                  </Link>
+                    <Link
+                      href="/upgrade-plan"
+                      onClick={() => setProfileDropdownOpen(false)}
+                      className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
+                    >
+                      <Crown strokeWidth={1} size={20} />
+                      <div className="pt-[10px] pb-[6px]">Upgrade plan</div>
+                    </Link>
 
-                  <button
-                    onClick={logout}
-                    className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
-                  >
-                    <LogOut strokeWidth={1} size={20} />
-                    <div>Logout</div>
-                  </button>
-                </div>
-              )}
+                    <button
+                      onClick={logout}
+                      className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
+                    >
+                      <LogOut strokeWidth={1} size={20} />
+                      <div>Logout</div>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ) : (
             !loading && (
