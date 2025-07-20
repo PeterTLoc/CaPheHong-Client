@@ -8,6 +8,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 import { Loader2, Home } from "lucide-react"
+import Spinner from '@/components/ui/Spinner'
 
 const initialLoginFormData: LoginForm = {
   email: "",
@@ -126,16 +127,11 @@ const page = () => {
         </div>
 
         <button
-          disabled={isLoading}
-          className={`text-white w-full min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] flex items-center justify-center gap-2 ${
-            isLoading 
-              ? "bg-[#BFBFBF] cursor-not-allowed" 
-              : "bg-[#6F4E37] hover:opacity-75"
-          }`}
+          className="button-brown mt-2"
           type="submit"
+          disabled={isLoading}
         >
-          {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-          {isLoading ? "Logging in..." : "Login"}
+          {isLoading ? <Spinner /> : "Sign in"}
         </button>
       </form>
 

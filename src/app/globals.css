@@ -81,7 +81,7 @@ body {
 }
 
 .container-top {
-  @apply bg-[#FBFBFB] border border-[#E5E5E5] p-5 rounded-t-[5px]
+  @apply bg-[#FBFBFB] border border-[#E5E5E5] border-b-[#FBFBFB] p-5 rounded-t-[5px]
 }
 
 .container-bottom {

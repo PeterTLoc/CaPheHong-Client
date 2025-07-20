@@ -12,8 +12,8 @@ interface ShopGridProps {
 
 export const ShopGrid = ({ shops, onCardClick }: ShopGridProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-      {shops.map((shop) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {Array.isArray(shops) ? shops.map((shop) => (
         <ShopCard
           key={shop.id}
           id={shop.id}
@@ -22,7 +22,7 @@ export const ShopGrid = ({ shops, onCardClick }: ShopGridProps) => {
           banner={shop.banner}
           onClick={onCardClick}
         />
-      ))}
+      )) : null}
     </div>
   )
 }

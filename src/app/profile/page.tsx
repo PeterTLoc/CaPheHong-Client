@@ -1,62 +1,56 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { useAuth } from "@/context/AuthContext"
-import Image from "next/image"
 import Breadcrumb from "@/components/ui/BreadCrumb"
-import {
-  Star,
-  MessageCircle,
-  MapPin,
-  UserCog,
-  Heart,
-  LifeBuoy,
-  Pencil,
-  Crown,
-} from "lucide-react"
-import { useState } from "react"
+import { MessageCircle, Pencil } from "lucide-react"
+import { fetchPostsByUser, fetchReviewsByUser } from "@/services/postService"
 import ProfileAvatar from "@/components/profile/ProfileAvatar"
 import ProfileInfo from "@/components/profile/ProfileInfo"
 import { motion } from "framer-motion"
+import Spinner from "@/components/ui/Spinner"
 
 const ProfilePage = () => {
   const { user, loading, updateProfile } = useAuth()
 
-  // For demo: hardcode premium status if not present
-  const isPremium = (user as any)?.is_premium ?? true
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
-  const avatar = (user as any)?.avatar || ""
-  const updatedAt =
-    user && "updated_at" in user && user.updated_at
-      ? user.updated_at
-      : Date.now()
-  const avatarUrl = avatar
-    ? avatar.startsWith("http")
-      ? `${avatar}?t=${updatedAt}`
-      : `${apiUrl}${avatar}?t=${updatedAt}`
-    : ""
+  const [userPostCount, setUserPostCount] = useState<number | null>(null)
+  const [userReviewCount, setUserReviewCount] = useState<number | null>(null)
+  const [statsLoading, setStatsLoading] = useState(false)
 
-  // Demo stats
+  useEffect(() => {
+    const fetchCounts = async () => {
+      if (!user) return
+      setStatsLoading(true)
+      try {
+        const [posts, reviews] = await Promise.all([
+          fetchPostsByUser(user.email),
+          fetchReviewsByUser(user.id),
+        ])
+        setUserPostCount(typeof posts.count === 'number' ? posts.count : 0)
+        setUserReviewCount(typeof reviews.count === 'number' ? reviews.count : 0)
+      } catch (err) {
+        setUserPostCount(0)
+        setUserReviewCount(0)
+      } finally {
+        setStatsLoading(false)
+      }
+    }
+    fetchCounts()
+  }, [user])
+
   const stats = [
     {
       icon: <MessageCircle size={14} strokeWidth={1} />,
       label: "Reviews",
       action: "written",
-      value: 12,
+      value: userReviewCount,
     },
     {
-      icon: <Heart size={14} strokeWidth={1} />,
-      label: "Favorites",
-      action: "saved",
-      value: 8,
+      icon: <Pencil size={14} strokeWidth={1} />,
+      label: "Posts",
+      action: "created",
+      value: userPostCount,
     },
-  ]
-
-  // Demo recent activity
-  const recent = [
-    { type: "Reviewed", name: "Highlands Coffee" },
-    { type: "Favorited", name: "Wait Tea" },
-    { type: "Visited", name: "Deer Coffee" },
   ]
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -90,7 +84,7 @@ const ProfilePage = () => {
     }
   }
 
-  if (loading) return <div className="p-4">Loading...</div>
+  if (loading) return <Spinner />
   if (!user) return <div className="p-4 text-red-500">User not found.</div>
 
   return (
@@ -116,46 +110,23 @@ const ProfilePage = () => {
         <ProfileInfo user={user} updateProfile={updateProfile} />
 
         {/* Activity Summary */}
-        {stats.length > 0 && (
-          <>
-            <span className="subtitle">Activity Summary</span>
-            <div className="grid grid-cols-4 gap-3 w-full">
-              {stats.slice(0, 3).map((stat, i) => (
-                <div key={i} className="container flex flex-col gap-3">
-                  <div className="flex gap-2 items-center">
-                    <div>{stat.icon}</div>
-                    <span className="subtext text-[11px]">{stat.label}</span>
-                  </div>
-                  <span className="font-bold text-[15px]">
-                    {stat.value} {stat.action}
-                  </span>
+        <span className="subtitle">Activity Summary</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-1 w-full">
+          {statsLoading ? (
+            <div className="col-span-full flex justify-center items-center py-6 text-[13px] text-gray-500">Loading activity...</div>
+          ) : (
+            stats.map((stat, i) => (
+              <div key={i} className="container flex flex-col gap-3">
+                <div className="flex gap-2 items-center">
+                  <div>{stat.icon}</div>
+                  <span className="subtext text-[11px]">{stat.label}</span>
                 </div>
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* Plan Info */}
-        <span className="subtitle">Plan Info</span>
-        <div className="container flex justify-between items-center h-[69px]">
-          <div className="flex gap-5 items-center">
-            <Crown size={20} strokeWidth={1} />
-            <div>
-              <div className="text-[13px]">
-                {user.is_premium ? "Personal Plan" : "Free Plan"}
+                <span className="font-bold text-[15px]">
+                  {stat.value ?? 0} {stat.action}
+                </span>
               </div>
-              <div className="subtext text-[11px]">
-                {(user as any).premium_until
-                  ? `Renews: ${new Date(
-                      (user as any).premium_until
-                    ).toLocaleDateString()}`
-                  : "No renewal date"}
-              </div>
-            </div>
-          </div>
-          <button className="button-brown cursor-pointer" disabled>
-            Upgrade Plans
-          </button>
+            ))
+          )}
         </div>
       </motion.div>
     </>

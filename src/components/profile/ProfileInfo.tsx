@@ -43,10 +43,6 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({ user, updateProfile }) => {
   }
 
   const handleAvatarButtonClick = () => {
-    if (!user.is_premium) {
-      router.push("/profile/upgrade-plan")
-      return
-    }
     if (!avatarUploading && fileInputRef.current) {
       fileInputRef.current.click()
     }

@@ -2,10 +2,11 @@
 
 import { usePathname } from "next/navigation"
 import React from "react"
-import { Navbar } from "./Navbar"
-import { Footer } from "@/components/home/Footer"
 
-const NavbarWrapper = ({ children }: { children: React.ReactNode }) => {
+import { Footer } from "@/components/layout/Footer"
+import { Header } from "./Header"
+
+const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()
   const hideNav =
     pathname === "/login" ||
@@ -15,7 +16,7 @@ const NavbarWrapper = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {!hideNav && <Navbar />}
+      {!hideNav && <Header />}
       <div className={`flex-1 ${!hideNav ? "pt-[84px]" : ""}`}>
         {children}
       </div>
@@ -24,4 +25,4 @@ const NavbarWrapper = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-export default NavbarWrapper
+export default LayoutWrapper

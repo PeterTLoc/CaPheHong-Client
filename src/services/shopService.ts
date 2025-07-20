@@ -4,11 +4,14 @@ import { parseAxiosError } from "@/utils/apiErrors"
 
 export const fetchShops = async (): Promise<Shop[]> => {
   try {
-    const { data } = await api.get("/api/dashboard/shop")
-    return data
+    const { data } = await api.get("/api/dashboard/shop");
+    // Always return the results array if present, otherwise an empty array
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.results)) return data.results;
+    return [];
   } catch (error) {
-    const parsed = parseAxiosError(error)
-    throw new Error(parsed.message)
+    const parsed = parseAxiosError(error);
+    throw new Error(parsed.message);
   }
 }
 

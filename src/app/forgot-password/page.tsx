@@ -4,6 +4,7 @@ import { parseAxiosError } from "@/utils/apiErrors"
 import { validateEmail } from "@/utils/authValidation"
 import axios from "axios"
 import React, { useState } from "react"
+import Spinner from '@/components/ui/Spinner'
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
@@ -72,7 +73,7 @@ const page = () => {
           type="submit"
           
         >
-          {isLoading ? "Sending..." : "Send reset link"}
+          {isLoading ? <Spinner /> : "Send reset link"}
         </button>
       </form>
 

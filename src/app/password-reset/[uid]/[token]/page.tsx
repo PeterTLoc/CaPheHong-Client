@@ -7,6 +7,7 @@ import axios from "axios"
 import { useParams } from "next/navigation"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
+import Spinner from '@/components/ui/Spinner'
 
 const initialResetPasswordFormData: ResetPasswordFormData = {
   password: "",
@@ -115,7 +116,7 @@ const page = () => {
             className="self-end text-white min-w-[130px] w-fit min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#6F4E37] hover:opacity-75"
             type="submit"
           >
-            {isLoading ? "Loading..." : "Create"}
+            {isLoading ? <Spinner /> : "Create"}
           </button>
         </div>
       </form>

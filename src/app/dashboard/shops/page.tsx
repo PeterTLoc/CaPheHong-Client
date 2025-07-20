@@ -2,14 +2,15 @@
 
 import React, { useEffect, useState } from "react"
 import { Shop, ShopPayload, ShopUpdatePayload } from "@/types/shop"
-import ShopAddModal from "@/components/shops/owner/ShopAddModal"
-import ShopList from "@/components/shops/owner/ShopList"
+import ShopAddModal from "@/components/dashboard/ShopAddModal"
+import ShopList from "@/components/dashboard/ShopList"
 import {
   fetchShops,
   createShop,
   updateShop,
   deleteShop,
 } from "@/services/shopService"
+import Spinner from '@/components/ui/Spinner'
 
 const ShopsPage = () => {
   const [shops, setShops] = useState<Shop[]>([])
@@ -73,7 +74,7 @@ const ShopsPage = () => {
           {/* Edit/Delete shop */}
           <h2 className="subtitle">Shop list</h2>
           {loading ? (
-            <p>Loading...</p>
+            <Spinner />
           ) : error ? (
             <p className="text-red-500">{error}</p>
           ) : (

@@ -20,11 +20,21 @@ export default function UpgradePlans() {
   const { user } = useAuth()
   const router = useRouter()
 
+  // Dynamically set current plan based on user premium status
+  const userIsPremium = user?.is_premium;
+  const plansWithCurrent = plans[planType].map(plan => {
+    const isPremiumPlan = plan.name.toLowerCase().includes("premium");
+    const isBasicPlan = plan.name.toLowerCase().includes("basic");
+    return {
+      ...plan,
+      current: userIsPremium ? (isPremiumPlan || isBasicPlan) : isBasicPlan,
+    };
+  });
+
   return (
     <RequireAuth>
       <div className="max-w-[1000px] mx-auto">
         <div className="title">Upgrade Plans</div>
-
         <div className="flex pb-5">
           <div className="bg-[#e6e6e6] gap-1 rounded-[5px] p-[3px] inline-flex shadow-inner">
             {["Personal", "Business"].map((type) => (
@@ -37,45 +47,59 @@ export default function UpgradePlans() {
                     : "text-[#4a4a4a] hover:bg-[#d9d9d9]"
                 }`}
               >
-                {type}
+                {type === "Personal" ? "Cá nhân" : "Doanh nghiệp"}
               </button>
             ))}
           </div>
         </div>
-
-        {plans[planType].length === 1 ? (
-          <motion.div
-            key={planType}
-            className="flex"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-          >
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+        >
+          {plansWithCurrent.map((plan, index) => (
             <div
-              key={0}
-              onClick={() => {
-                setSelectedPlan({
-                  name: plans[planType][0].name,
-                  price: plans[planType][0].price,
-                  type: planType,
-                })
-                setShowCheckout(true)
-              }}
-              className="container cursor-pointer hover:shadow-md transition hover:-translate-y-1 w-full max-w-[350px]"
+              key={index}
+              className={`container w-full max-w-[350px] relative cursor-pointer ${plan.current ? "" : "border border-[#ECECEC]"}`}
             >
-              <div className="text-lg font-semibold text-[#1b1b1b]">
-                {plans[planType][0].name}
+              <div className={`text-lg font-semibold ${plan.current ? "text-[#8B8B8B]" : "text-[#1b1b1b]"}`}>
+                {plan.name}
               </div>
-              <div className="text-[#6F4E37] font-semibold text-lg py-2">
-                {plans[planType][0].price}
+              <div className={`font-semibold text-lg ${plan.current ? "text-[#8B8B8B]" : "text-[#6F4E37]"}`}>
+                {plan.price}
+              </div>
+              <div className="flex justify-center mt-3 mb-4">
+                {plan.current ? (
+                  <button
+                    disabled
+                    className="cursor-pointer subtext min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#FEFEFE] border border-[#E5E5E5]"
+                  >
+                    Your current plan
+                  </button>
+                ) : (
+                  <button
+                    className="button-brown py-2"
+                    onClick={() => {
+                      setSelectedPlan({
+                        name: plan.name,
+                        price: plan.price,
+                        type: planType,
+                      })
+                      setShowCheckout(true)
+                    }}
+                  >
+                    Upgrade
+                  </button>
+                )}
               </div>
               <div className="text-sm text-[#6e6e6e]">
-                {Array.isArray(plans[planType][0].description) ? (
+                {Array.isArray(plan.description) && plan.description.length > 0 ? (
                   <div className="flex flex-col gap-2">
-                    {plans[planType][0].description.map((item, idx) => (
-                      <div key={idx} className="flex items-start">
+                    {plan.description.map((item, idx) => (
+                      <div key={idx} className="flex">
                         <Check
-                          className="inline-block mr-2 text-[#6F4E37] mt-1"
+                          className="inline-block mr-2 text-[#6F4E37] w-[18px] h-[18px] flex-shrink-0"
                           size={18}
                         />
                         <span>{item}</span>
@@ -85,65 +109,14 @@ export default function UpgradePlans() {
                 ) : (
                   <span>
                     <Check className="inline-block mr-2 text-[#6F4E37]" />
-                    {plans[planType][0].description}
+                    Không có tính năng nào
                   </span>
                 )}
               </div>
             </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key={planType}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            {plans[planType].map((plan, index) => (
-              <div
-                key={index}
-                onClick={() => {
-                  setSelectedPlan({
-                    name: plan.name,
-                    price: plan.price,
-                    type: planType,
-                  })
-                  setShowCheckout(true)
-                }}
-                className="container cursor-pointer hover:shadow-md transition hover:-translate-y-1 w-full max-w-[350px]"
-              >
-                <div className="text-lg font-semibold text-[#1b1b1b]">
-                  {plan.name}
-                </div>
-                <div className="text-[#6F4E37] font-semibold text-lg py-2">
-                  {plan.price}
-                </div>
-                <div className="text-sm text-[#6e6e6e]">
-                  {Array.isArray(plan.description) ? (
-                    <div className="flex flex-col gap-2">
-                      {plan.description.map((item, idx) => (
-                        <div key={idx} className="flex items-start">
-                          <Check
-                            className="inline-block mr-2 text-[#6F4E37] mt-1"
-                            size={18}
-                          />
-                          <span>{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <span>
-                      <Check className="inline-block mr-2 text-[#6F4E37]" />
-                      {plan.description}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        )}
+          ))}
+        </motion.div>
       </div>
-      
       {showCheckout && selectedPlan && (
         <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-[#F3F3F3] rounded-[5px] p-5 w-full max-w-md shadow-lg relative">
