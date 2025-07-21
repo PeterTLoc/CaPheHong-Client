@@ -131,7 +131,7 @@ const page = () => {
           </Link>
         </div>
 
-        <h1 className="text-[26px] font-bold self-center mb-6">
+        <h1 className="text-[26px] font-bold mb-6">
           Create a new account
         </h1>
 
@@ -215,7 +215,7 @@ const page = () => {
             type="submit"
           >
             {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-            {isLoading ? "Registering..." : "Register"}
+            {isLoading ? "Loading" : "Register"}
           </button>
         </div>
       </form>

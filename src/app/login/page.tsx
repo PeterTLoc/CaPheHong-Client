@@ -8,7 +8,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 import { Loader2, Home } from "lucide-react"
-import Spinner from '@/components/ui/Spinner'
+import Spinner from "@/components/ui/Spinner"
 
 const initialLoginFormData: LoginForm = {
   email: "",
@@ -56,15 +56,15 @@ const page = () => {
   }
 
   return (
-    <div 
+    <div
       className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: "url('/images/backgroundloginregister.png')"
+        backgroundImage: "url('/images/backgroundloginregister.png')",
       }}
     >
       {/* Overlay for better readability */}
       <div className="absolute inset-0 bg-black/20"></div>
-      
+
       <form
         className="flex flex-col bg-[#FBFBFB] p-5 border border-[#E5E5E5] rounded-md relative z-10 shadow-lg"
         onSubmit={handleSubmit}
@@ -79,7 +79,7 @@ const page = () => {
           </Link>
         </div>
 
-        <h1 className="text-[26px] font-bold mb-6 text-center">Sign in</h1>
+        <h1 className="text-[26px] font-bold mb-6">Sign in</h1>
 
         <div className="mb-4">
           <input
@@ -126,13 +126,20 @@ const page = () => {
           </Link>
         </div>
 
-        <button
-          className="button-brown mt-2"
-          type="submit"
-          disabled={isLoading}
-        >
-          {isLoading ? <Spinner /> : "Sign in"}
-        </button>
+        <div className="mt-2 flex justify-end">
+          <button
+            disabled={isLoading}
+            className={`text-white w-[130px] min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] flex items-center justify-center gap-2 ${
+              isLoading
+                ? "bg-[#BFBFBF] cursor-not-allowed"
+                : "bg-[#6F4E37] hover:opacity-75"
+            }`}
+            type="submit"
+          >
+            {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+            {isLoading ? "Loading" : "Sign in"}
+          </button>
+        </div>
       </form>
 
       {serverError && (

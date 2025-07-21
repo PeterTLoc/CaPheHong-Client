@@ -137,7 +137,7 @@ const CheckoutClient = ({
         <div className="flex justify-end mt-4">
           <button
             onClick={closeModal}
-            className="button text-[#6F4E37] border border-[#6F4E37] bg-white hover:bg-[#f3f3f3]"
+            className="hover:cursor-pointer button text-[#6F4E37] border border-[#6F4E37] bg-white hover:bg-[#f3f3f3]"
           >
             Cancel
           </button>

@@ -35,16 +35,16 @@ export default function UpgradePlans() {
     <RequireAuth>
       <div className="max-w-[1000px] mx-auto">
         <div className="title">Upgrade Plans</div>
-        <div className="flex pb-5">
-          <div className="bg-[#e6e6e6] gap-1 rounded-[5px] p-[3px] inline-flex shadow-inner">
+        <div className="flex pb-[13px]">
+          <div className="bg-[#EEEEEE] border border-[#E5E5E5] gap-1 rounded-[5px] inline-flex shadow-inner">
             {["Personal", "Business"].map((type) => (
               <button
                 key={type}
                 onClick={() => setPlanType(type as "Personal" | "Business")}
-                className={`min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] text-sm font-medium rounded-[5px] transition-all duration-200 ${
+                className={`min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] text-[13px] font-medium rounded-[5px] transition-all duration-200 ${
                   planType === type
                     ? "bg-[#6F4E37] text-white shadow"
-                    : "text-[#4a4a4a] hover:bg-[#d9d9d9]"
+                    : "text-[#4a4a4a] hover:bg-[#d9d9d9] hover:cursor-pointer"
                 }`}
               >
                 {type === "Personal" ? "Cá nhân" : "Doanh nghiệp"}
@@ -61,7 +61,7 @@ export default function UpgradePlans() {
           {plansWithCurrent.map((plan, index) => (
             <div
               key={index}
-              className={`container w-full max-w-[350px] relative cursor-pointer ${plan.current ? "" : "border border-[#ECECEC]"}`}
+              className={`container w-full max-w-[350px] relative  ${plan.current ? "" : "border border-[#ECECEC]"}`}
             >
               <div className={`text-lg font-semibold ${plan.current ? "text-[#8B8B8B]" : "text-[#1b1b1b]"}`}>
                 {plan.name}
@@ -73,13 +73,13 @@ export default function UpgradePlans() {
                 {plan.current ? (
                   <button
                     disabled
-                    className="cursor-pointer subtext min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#FEFEFE] border border-[#E5E5E5]"
+                    className="subtext min-h-[32px] pt-[5px] pb-[3px] w-full rounded-[5px] text-[13px] bg-[#FEFEFE] border border-[#E5E5E5]"
                   >
                     Your current plan
                   </button>
                 ) : (
                   <button
-                    className="button-brown py-2"
+                    className="w-full min-h-[32px] px-3 pt-[5px] pb-[3px] rounded-[5px] text-[13px] text-white bg-[#6F4E37] hover:opacity-75 py-2 hover:cursor-pointer"
                     onClick={() => {
                       setSelectedPlan({
                         name: plan.name,
@@ -122,7 +122,7 @@ export default function UpgradePlans() {
           <div className="bg-[#F3F3F3] rounded-[5px] p-5 w-full max-w-md shadow-lg relative">
             <button
               onClick={() => setShowCheckout(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              className="hover:cursor-pointer rounded-[5px] absolute top-3 right-3 text-gray-500 hover:text-gray-700 hover:bg-gray-200 px-2 py-1"
             >
               ✕
             </button>
