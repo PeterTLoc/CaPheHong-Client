@@ -16,7 +16,7 @@ export default function CommentList({ comments, onReply, onVote, timeAgo }: Comm
   return (
     <div className="space-y-5">
       {sortedComments.map((c) => (
-        <CommentItem key={c.id} comment={c} onReply={onReply} onVote={onVote} timeAgo={timeAgo} />
+        <CommentItem key={c.id} comment={c} onReply={onReply} onVote={onVote} />
       ))}
     </div>
   )
