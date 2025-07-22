@@ -32,17 +32,23 @@ const ShopList: React.FC<ShopListProps> = ({ shops, onDelete, onUpdate }) => {
 
   return (
     <div className="w-full flex flex-col gap-1">
-      {userShops.map((shop) => (
-        <ShopItem
-          key={shop.id}
-          shop={shop}
-          isEditing={editingShopId === shop.id}
-          onEdit={() => handleEdit(shop.id)}
-          onCancel={handleCancel}
-          onSave={(payload) => handleSave(shop.id, payload)}
-          onDelete={() => onDelete(shop.id)}
-        />
-      ))}
+      {userShops.length === 0 ? (
+        <p className="container text-[11px] max-w-[1000px] subtext">
+          No shops yet. Add one to get started.
+        </p>
+      ) : (
+        userShops.map((shop) => (
+          <ShopItem
+            key={shop.id}
+            shop={shop}
+            isEditing={editingShopId === shop.id}
+            onEdit={() => handleEdit(shop.id)}
+            onCancel={handleCancel}
+            onSave={(payload) => handleSave(shop.id, payload)}
+            onDelete={() => onDelete(shop.id)}
+          />
+        ))
+      )}
     </div>
   )
 }

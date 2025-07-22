@@ -57,11 +57,9 @@ export const Header = () => {
     { href: "/", label: "Home", icon: <Home size={18} strokeWidth={1.5} /> },
     { href: "/shops", label: "Shops", icon: <Store size={18} strokeWidth={1.5} /> },
     { href: "/posts", label: "Posts", icon: <Pencil size={18} strokeWidth={1.5} /> },
-    { href: "/profile", label: "Profile", icon: <User size={18} strokeWidth={1.5} /> },
-    { href: "/profile/favorites", label: "Favorites", icon: <Star size={18} strokeWidth={1.5} /> },
-    { href: "/profile/upgrade-plan", label: "Upgrade", icon: <Crown size={18} strokeWidth={1.5} /> },
+    { href: "/upgrade-plan", label: "Plans", icon: <Crown size={18} strokeWidth={1.5} /> },
   ];
-  const mainLinks = links.slice(0, 3); // Home, Shops, Posts
+  const mainLinks = links.slice(0, 4); // Home, Shops, Posts
 
   const handleMobileNavClick = (href: string) => {
     setMobileMenuOpen(false)
@@ -394,7 +392,7 @@ export const Header = () => {
                       className="text-[13px] absolute right-0 mt-2 p-1 bg-[#FBFBFB] border border-[#E5E5E5] rounded-[5px] shadow-lg z-50"
                     >
                       <Link
-                        href={user?.role === "guest" ? "/profile" : "/dashboard"}
+                        href={user?.role === "guest" ? "/profile" : "/dashboard/shops"}
                         onClick={() => setProfileDropdownOpen(false)}
                         className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
                       >
@@ -413,7 +411,7 @@ export const Header = () => {
                       </Link>
 
                       <Link
-                        href="/profile/upgrade-plan"
+                        href="/upgrade-plan"
                         onClick={() => setProfileDropdownOpen(false)}
                         className="rounded-[5px] w-[280px] h-9 flex gap-[14px] px-[10px] items-center hover:bg-[#EAEAEA]"
                       >

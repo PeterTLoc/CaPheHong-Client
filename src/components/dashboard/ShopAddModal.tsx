@@ -73,7 +73,7 @@ const ShopAddModal: React.FC<ShopAddModalProps> = ({ onShopAdded }) => {
   }
 
   return (
-    <div>
+    <div className="mb-1">
       {/* Trigger button */}
       <div className="section">
         <div className="section-text">Add a new shop</div>

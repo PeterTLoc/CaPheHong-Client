@@ -10,7 +10,8 @@ import {
   updateShop,
   deleteShop,
 } from "@/services/shopService"
-import Spinner from '@/components/ui/Spinner'
+import Spinner from "@/components/ui/Spinner"
+import Breadcrumb from "@/components/ui/BreadCrumb"
 
 const ShopsPage = () => {
   const [shops, setShops] = useState<Shop[]>([])
@@ -61,18 +62,15 @@ const ShopsPage = () => {
 
   return (
     <main>
-      <h1 className="title text-left">Shops</h1>
-
-      <div className="h-[calc(100vh-163px)] overflow-y-auto">
+      <div className="h-[calc(100vh-163px)] px-5 overflow-y-auto">
         <div className="max-w-[1000px]">
+          <h1 className="title">Shops</h1>
           {/* Add shop */}
-          <h2 className="subtitle-top">Add shop</h2>
           <ShopAddModal
             onShopAdded={(shop) => setShops((prev) => [shop, ...prev])}
           />
 
           {/* Edit/Delete shop */}
-          <h2 className="subtitle">Shop list</h2>
           {loading ? (
             <Spinner />
           ) : error ? (

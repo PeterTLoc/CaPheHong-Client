@@ -20,16 +20,23 @@ export default function UpgradePlans() {
   const { user } = useAuth()
   const router = useRouter()
 
-  // Dynamically set current plan based on user premium status
-  const userIsPremium = user?.is_premium;
-  const plansWithCurrent = plans[planType].map(plan => {
-    const isPremiumPlan = plan.name.toLowerCase().includes("premium");
-    const isBasicPlan = plan.name.toLowerCase().includes("basic");
+  // Dynamically set current plan based on user role and premium status
+  const plansWithCurrent = plans[planType].map((plan) => {
+    const isPremiumPlan = plan.name.toLowerCase().includes("premium")
+    const isBasicPlan = plan.name.toLowerCase().includes("basic")
+    const userPlanType = user?.role === "owner" ? "Business" : "Personal"
+    const userIsPremium = user?.is_premium
+
+    // Mark both Basic and Premium as current if user is premium
+    const isCurrent =
+      userPlanType === planType &&
+      ((userIsPremium && (isPremiumPlan || isBasicPlan)) ||
+        (!userIsPremium && isBasicPlan))
     return {
       ...plan,
-      current: userIsPremium ? (isPremiumPlan || isBasicPlan) : isBasicPlan,
-    };
-  });
+      current: isCurrent,
+    }
+  })
 
   return (
     <RequireAuth>
@@ -61,12 +68,22 @@ export default function UpgradePlans() {
           {plansWithCurrent.map((plan, index) => (
             <div
               key={index}
-              className={`container w-full max-w-[350px] relative  ${plan.current ? "" : "border border-[#ECECEC]"}`}
+              className={`container w-full max-w-[350px] relative  ${
+                plan.current ? "" : "border border-[#ECECEC]"
+              }`}
             >
-              <div className={`text-lg font-semibold ${plan.current ? "text-[#8B8B8B]" : "text-[#1b1b1b]"}`}>
+              <div
+                className={`text-lg font-semibold ${
+                  plan.current ? "text-[#8B8B8B]" : "text-[#1b1b1b]"
+                }`}
+              >
                 {plan.name}
               </div>
-              <div className={`font-semibold text-lg ${plan.current ? "text-[#8B8B8B]" : "text-[#6F4E37]"}`}>
+              <div
+                className={`font-semibold text-lg ${
+                  plan.current ? "text-[#8B8B8B]" : "text-[#6F4E37]"
+                }`}
+              >
                 {plan.price}
               </div>
               <div className="flex justify-center mt-3 mb-4">
@@ -94,7 +111,8 @@ export default function UpgradePlans() {
                 )}
               </div>
               <div className="text-sm text-[#6e6e6e]">
-                {Array.isArray(plan.description) && plan.description.length > 0 ? (
+                {Array.isArray(plan.description) &&
+                plan.description.length > 0 ? (
                   <div className="flex flex-col gap-2">
                     {plan.description.map((item, idx) => (
                       <div key={idx} className="flex">
