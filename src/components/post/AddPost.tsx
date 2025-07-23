@@ -21,7 +21,7 @@ const AddPost: React.FC<AddPostProps> = ({ onAddPost, count }) => {
       return
     }
     if (!user.is_premium) {
-      router.push("/profile/upgrade-plan")
+      router.push("/upgrade-plan")
       return
     }
     setOpen(true)
