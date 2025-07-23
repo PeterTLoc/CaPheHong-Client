@@ -13,11 +13,6 @@ const guestLinks = [
     label: "Profile",
     icon: <User size={20} strokeWidth={1} />,
   },
-  {
-    href: "/profile/favorites",
-    label: "Favorites",
-    icon: <Star size={20} strokeWidth={1} />,
-  },
 ]
 
 const ownerLinks = [
